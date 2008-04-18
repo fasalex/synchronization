@@ -254,7 +254,7 @@ endfor
 #### End of Simulation -- Deleting files 
 ######################################################################################################
 plot(std(MainVector));
-print(filename) ;
+print(filename);
 #axis([0 500 0 1]);
 endif
 system("rm *.vec");
