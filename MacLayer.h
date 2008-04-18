@@ -17,6 +17,7 @@ class MacLayer:public BaseModule {
 private:
 	
 	double broadcast_time[SIZE_OF_NETWORK];
+	double frequency[SIZE_OF_NETWORK] ;
 	double temp_varr[SIZE_OF_NETWORK][SIZE_OF_NETWORK];
 	int count[SIZE_OF_NETWORK];
 	double Ref[SIZE_OF_NETWORK] ;

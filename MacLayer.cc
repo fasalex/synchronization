@@ -22,6 +22,11 @@ void MacLayer::initialize(int stage) {
 		dataIn = findGate("lowerGateIn");
 		controlOut = findGate("lowerControlOut");
 		controlIn = findGate("lowerControlIn");
+
+		if(dblrand() < 0.5)
+		frequency[myIndex] = clock_const + clock_const*30*1e-6*dblrand() ;
+		else 
+		frequency[myIndex] = clock_const - clock_const*30*1e-6*dblrand() ;
 		
 		phy = FindModule<MacToPhyInterface*>::findSubModule(this->parentModule());
 		
@@ -79,7 +84,8 @@ void MacLayer::analyze_msg()
 		}
                 total = total + temp_varr[myIndex][x] ;
         }
-	double offset ;
+	double offset = 0 ;
+	ev << algorithm << endl ;
 	switch(algorithm){
 /////// Median algorithm ...	
 	case 2:{
@@ -97,22 +103,42 @@ void MacLayer::analyze_msg()
 		break;}
 ////// Weight ....
 	case 3:{
-		double Rxx[SIZE_OF_NETWORK];
-		for (int m=1; m < neigh+1; m++){
-   			for (int n=1;n <neigh-m+1 ; n++)
-      				Rxx[m]=Rxx[m]+temp_varr[myIndex][n]*temp_varr[myIndex][n+m-1];
-   		}
-		offset = 0 ;
+		double weight[SIZE_OF_NETWORK];
+		double tempp[SIZE_OF_NETWORK][SIZE_OF_NETWORK] ;
+		double temp ;
+		double sum;
+
+		if(temp_varr[myIndex][0] < 0 ) 
+			temp = abs(temp_varr[myIndex][0]) ;
+		else 
+			temp = 0 ;
+
+		for(int af = 0 ; af < neigh ; af ++) {
+			sum = sum + temp + temp_varr[myIndex][af] ;
+			tempp[myIndex][af] = temp_varr[myIndex][af] + temp ;
+		}
+	
+		if(sum==0)
+			offset = 0 ;
+		else{
+		for (int m=0; m < neigh; m++){
+		         weight[neigh-m-1]=(tempp[myIndex][m]+temp) / sum ; 
+		}
+		for(int n=0; n< neigh;n++)
+		  	offset = offset + tempp[myIndex][n] * weight[n] ;
+		}
+		offset = offset - temp ;
 		break;}
 	default:
 		offset = 0;
 		break;
 	}
-	broadcast_time[myIndex] = broadcast_time[myIndex] - gain*offset + clock_const ;
+	ev << offset << endl ;
+	broadcast_time[myIndex] = broadcast_time[myIndex] - gain*offset + frequency[myIndex] ;
 	MacPkt* pkt = createMacPkt(frame_length);
 	scheduleAt((int)broadcast_time[myIndex],pkt) ;
 	count[myIndex] = 0 ;
-	cMessage *ctrl = new cMessage("Control Message");
+	cMessage *ctrl = new cMessage("Contrsvn checkout http://fasalex-svn.cvsdude.com/synchronization ol Message");
 	Ref[myIndex] = Ref[myIndex] + clock_const ;
 	Period[myIndex]++ ;
 	ctrl->setKind(CONTROL_MESSAGE);
