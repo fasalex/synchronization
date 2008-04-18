@@ -25,3 +25,4 @@ pos(t) = pos(t) - (max_drift/len_pos)* (t-1) ;
 endfor 
 [Weighty WeightyP] = calculate_weight(pos,neg);
 
+
