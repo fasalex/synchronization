@@ -1,0 +1,29 @@
+Additional notes to be considered :
+
+speed 
+algorithm 
+gain 
+initial values
+number 
+type of mobility 
+alpha 
+
+Dependencies 
+period * numb
+set of parameters for initial values 
+what is losin a node mean ?
+
+Limitations and assumptions 
+	shadowing and fading not included 
+	input values random 
+	slot synchronization factors not included
+
+Results 
+	Median algorithm is stable as seen in most cases
+	abrupt changes disturb the results - taking out of synchronization
+	slow synch with speeds 
+
+Discussion and Recommendations
+	periodically perioding
+	correlating with a predefined value to tackle the deviation 
+
