@@ -13,16 +13,21 @@ Median = median(y) ;
 
 Mean = mean(y) ;
 diff = abs(y - Median);
+diff2 = abs((y - Median).^2);
+diff_sum2 = sum(diff2) ;
 diff_sum = sum(diff) ;
-if(len != 1)&&(diff_sum !=0 ) 
+if(len != 1)&&(diff_sum2 !=0 && diff_sum != 0) 
 wei = (1 - diff ./ diff_sum) ./ (len-1);
+wei2 = (1 - diff2 ./ diff_sum2) ./ (len-1);
 else 
 wei = 1 ;
+wei2 = 1 ;
 endif 
 
 yy = wei.*y ;
+uu = wei2.*y ;
 WeightyP = sum(yy) ;
-Weighty = WeightyP ;
+Weighty = sum(uu) ;
 
 %[Mean Median] = calculate_weight(pos,neg);
 
