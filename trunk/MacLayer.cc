@@ -85,12 +85,12 @@ void MacLayer::analyze_msg()
                 total = total + temp_varr[myIndex][x] ;
         }
 	double offset = 0 ;
-	ev << algorithm << endl ;
+	int medium_value = (int) neigh / 2 ;
+	double median = 0.5 *(temp_varr[myIndex][medium_value - 1] + temp_varr[myIndex][medium_value]) ;
 	switch(algorithm){
 /////// Median algorithm ...	
 	case 2:{
-		int medium_value = (int) neigh / 2 ;
-		offset = 0.5 *(temp_varr[myIndex][medium_value - 1] + temp_varr[myIndex][medium_value]) ;
+		offset = median ;
 		break;}
 /////// Mean algorithm ...	
 	case 1:{
@@ -102,7 +102,7 @@ void MacLayer::analyze_msg()
 		offset = average ;
 		break;}
 ////// Weight ....
-	case 3:{
+	case 4:{
 		double weight[SIZE_OF_NETWORK];
 		double tempp[SIZE_OF_NETWORK][SIZE_OF_NETWORK] ;
 		double temp ;
@@ -129,6 +129,43 @@ void MacLayer::analyze_msg()
 		}
 		offset = offset - temp ;
 		break;}
+	case 3:{
+		/*double weight[SIZE_OF_NETWORK];
+		double tempp[SIZE_OF_NETWORK][SIZE_OF_NETWORK] ;
+		for (int m=0; m < neigh; m++){
+		         weight[m]= (total - temp_varr[myIndex][m] - median*(neigh-1))/((neigh-1)*(total - median*neigh)) ; 
+		}
+		for(int n=0; n< neigh;n++){
+		  	offset = offset + temp_varr[myIndex][n] * weight[n] ;
+		}		
+		break;}*/
+		double weight[SIZE_OF_NETWORK];
+		double tempp[SIZE_OF_NETWORK][SIZE_OF_NETWORK] ;
+		double sum = 0 ;
+		double temp ;
+
+		if(temp_varr[myIndex][0] < 0 ) 
+			temp = abs(temp_varr[myIndex][0]) ;
+		else 
+			temp = 0 ;
+
+		for(int af = 0 ; af < neigh ; af ++) {
+			tempp[myIndex][af] = abs(temp_varr[myIndex][af]-median);
+			sum = sum + tempp[myIndex][af] ;
+		}
+		if(sum==0)
+			offset = 0 ;
+		else{
+		for (int m=0; m < neigh; m++){
+			 if(neigh != 1)
+		         weight[m]= (1 - tempp[myIndex][m]/sum)/(neigh-1) ; 
+			 else
+			 weight[m] = 1 ;
+		  	 offset = offset + temp_varr[myIndex][m] * weight[m] ;
+		}
+		}
+		offset = offset * gain ;
+		break;}
 	default:
 		offset = 0;
 		break;
@@ -138,7 +175,7 @@ void MacLayer::analyze_msg()
 	MacPkt* pkt = createMacPkt(frame_length);
 	scheduleAt((int)broadcast_time[myIndex],pkt) ;
 	count[myIndex] = 0 ;
-	cMessage *ctrl = new cMessage("Contrsvn checkout http://fasalex-svn.cvsdude.com/synchronization ol Message");
+	cMessage *ctrl = new cMessage("bla bla bla");
 	Ref[myIndex] = Ref[myIndex] + clock_const ;
 	Period[myIndex]++ ;
 	ctrl->setKind(CONTROL_MESSAGE);

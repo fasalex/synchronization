@@ -12,7 +12,7 @@ ref = repmat(REFERENCE_VALUE, [1,TRIAL]);
 const = 32768 ;
 cycles_per_slot = 29 ; 
 tempr = 25 ;
-
+gain = 1.5;
 clock_drift = zeros(1,n) ;
 
 clock_drift = (tempr - 25 )* e-6 * 0.5 / 20 ;
@@ -84,18 +84,18 @@ t2 = t ;
 t3 = t ;
 t4 = t ;
 while (1) 
-	if(mod(fired,1) != 0)
-#		temp1(:) = 0 ;
-#		temp2(:) = 0 ;
-#		temp3(:) = 0 ;
-#		temp4(:) = 0 ;
+	if(mod(fired,3) != 0)
+		temp1(:) = 0 ;
+		temp2(:) = 0 ;
+		temp3(:) = 0 ;
+		temp4(:) = 0 ;
 	endif
 
 	for(j=1:n)
-		t1(j) = t1(j) + temp1(j) + clock_frequency(j) + clock_drift(j) ;
-		t2(j) = t2(j) + temp2(j) + clock_frequency(j) + clock_drift(j) ;	
-		t3(j) = t3(j) + temp3(j) + clock_frequency(j) + clock_drift(j) ;	
-		t4(j) = t4(j) + temp4(j) + clock_frequency(j) + clock_drift(j) ;		
+		t1(j) = t1(j) + gain*temp1(j) + clock_frequency(j) + clock_drift(j) ;
+		t2(j) = t2(j) + gain*temp2(j) + clock_frequency(j) + clock_drift(j) ;	
+		t3(j) = t3(j) + gain*temp3(j) + clock_frequency(j) + clock_drift(j) ;	
+		t4(j) = t4(j) + gain*temp4(j) + clock_frequency(j) + clock_drift(j) ;		
 	end
 	for (i = 1:n ) 
 
@@ -132,6 +132,7 @@ while (1)
  		PHASE_ERROR4 ;
 		[Mean4 Median4 Weighty4 WeightyP4] = weight(PHASE_ERROR4) ;
 		temp4(i) = WeightyP4;
+
 	end
 	
 	fired = fired + 1 ;
@@ -157,6 +158,6 @@ ylabel("Standard Deviation " ) ;
 axis([1 TRIAL]);
 hold off; 
 disp("The standard deviation is : ");
-disp(std(double(t))); 
+disp(std(double(t4))); 
 disp("Number of times that the nodes fired before synchronization is : ");
 disp(fired);

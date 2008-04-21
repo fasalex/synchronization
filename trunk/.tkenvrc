@@ -36,7 +36,7 @@ config filtobjlist-order	{Class}
 config last-nedfile	{}
 config log-save-filename	{omnetpp.out}
 config logwindow-scrollbacklines	{100000}
-config mainwin-geom	{1400x946+0+25}
+config mainwin-geom	{1280x915+4+49}
 config mainwin-state	{normal}
 config rununtil-event	{100}
 config rununtil-mode	{Normal}
