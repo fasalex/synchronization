@@ -12,7 +12,7 @@ ref = repmat(REFERENCE_VALUE, [1,TRIAL]);
 const = 32768 ;
 cycles_per_slot = 29 ; 
 tempr = 25 ;
-gain = 1.5;
+gain = 1.0;
 clock_drift = zeros(1,n) ;
 
 clock_drift = (tempr - 25 )* e-6 * 0.5 / 20 ;
@@ -84,7 +84,7 @@ t2 = t ;
 t3 = t ;
 t4 = t ;
 while (1) 
-	if(mod(fired,3) != 0)
+	if(mod(fired,1) != 0)
 		temp1(:) = 0 ;
 		temp2(:) = 0 ;
 		temp3(:) = 0 ;
@@ -147,12 +147,12 @@ while (1)
 end
 clf ;
 hold on ;
-plot(std_t2,'b') ; # Mean 
+plot(std_t4,'b') ; # Weight 
 plot(std_t3,'p') ; # Median from m-file
-plot(std_t1,'r') ; # Weight  
+plot(std_t1,'r') ; # Weight with square
 #plot(std_t4,'*') ; # Weight Least square 
 plot(ref,'v');
-legend("Mean","Median","Weight factor ");#,"Weight factor- Least Square");
+legend("Weight","Median","Weight with square ");#,"Weight factor- Least Square");
 xlabel("Number of firing times ");
 ylabel("Standard Deviation " ) ;
 axis([1 TRIAL]);
