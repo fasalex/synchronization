@@ -46,10 +46,6 @@ void MacLayer::initialize(int stage) {
 }
 
 void MacLayer::handleMessage(cMessage* msg) {
-	
-	int fasika ;
-	fasika = (int) msg->getSrcAddr() ;
-	ev << fasika << endl ;	
 	if( msg->kind() == BROADCAST_MESSAGE ){
 		log("Sending Broadcast Messages to the physical Layer ....");
 		output_vec.record(broadcast_time[myIndex]) ;			
