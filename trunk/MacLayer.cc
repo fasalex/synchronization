@@ -1,9 +1,9 @@
 #include "MacLayer.h"
-
 //---omnetpp part----------------------
 Define_Module(MacLayer);
 
 //---intialisation---------------------
+
 
 void MacLayer::initialize(int stage) {
 	
@@ -11,6 +11,7 @@ void MacLayer::initialize(int stage) {
 	periodCount = parentModule()->par("limit");
 	algorithm  = parentModule()->par("algorithm");
 	gain = parentModule() ->par("gain");
+	jump = parentModule() ->par("jump") ;
 	BaseModule::initialize(stage);
 
 	if(stage == 0) {
@@ -22,11 +23,11 @@ void MacLayer::initialize(int stage) {
 		dataIn = findGate("lowerGateIn");
 		controlOut = findGate("lowerControlOut");
 		controlIn = findGate("lowerControlIn");
-
-		if(dblrand() < 0.5)
-		frequency[myIndex] = clock_const + clock_const*30*1e-6*dblrand() ;
+		random_start = (double) parentModule()->par("start_time") / hostCount;
+		if(random_start < 0.5)
+		frequency[myIndex] = clock_const + clock_const*30*1e-6*random_start ;
 		else 
-		frequency[myIndex] = clock_const - clock_const*30*1e-6*dblrand() ;
+		frequency[myIndex] = clock_const - clock_const*30*1e-6*random_start  ;
 		
 		phy = FindModule<MacToPhyInterface*>::findSubModule(this->parentModule());
 		
@@ -129,24 +130,9 @@ void MacLayer::analyze_msg()
 		offset = offset - temp ;
 		break;}
 	case 3:{
-		/*double weight[SIZE_OF_NETWORK];
-		double tempp[SIZE_OF_NETWORK][SIZE_OF_NETWORK] ;
-		for (int m=0; m < neigh; m++){
-		         weight[m]= (total - temp_varr[myIndex][m] - median*(neigh-1))/((neigh-1)*(total - median*neigh)) ; 
-		}
-		for(int n=0; n< neigh;n++){
-		  	offset = offset + temp_varr[myIndex][n] * weight[n] ;
-		}		
-		break;}*/
 		double weight[SIZE_OF_NETWORK];
 		double tempp[SIZE_OF_NETWORK][SIZE_OF_NETWORK] ;
 		double sum = 0 ;
-		double temp ;
-
-		if(temp_varr[myIndex][0] < 0 ) 
-			temp = abs(temp_varr[myIndex][0]) ;
-		else 
-			temp = 0 ;
 
 		for(int af = 0 ; af < neigh ; af ++) {
 			tempp[myIndex][af] = abs(temp_varr[myIndex][af]-median);
@@ -160,7 +146,7 @@ void MacLayer::analyze_msg()
 		         weight[m]= (1 - tempp[myIndex][m]/sum)/(neigh-1) ; 
 			 else
 			 weight[m] = 1 ;
-		  	 offset = offset + temp_varr[myIndex][m] * weight[m] ;
+		  	 offset = offset + ( temp_varr[myIndex][m] * weight[m] ) ;
 		}
 		}
 		offset = offset * gain ;
@@ -169,7 +155,8 @@ void MacLayer::analyze_msg()
 		offset = 0;
 		break;
 	}
-	ev << offset << endl ;
+	if(Period[myIndex]%jump != 0)
+	offset = 0 ;
 	broadcast_time[myIndex] = broadcast_time[myIndex] - gain*offset + frequency[myIndex] ;
 	MacPkt* pkt = createMacPkt(frame_length);
 	scheduleAt((int)broadcast_time[myIndex],pkt) ;
@@ -179,7 +166,6 @@ void MacLayer::analyze_msg()
 	Period[myIndex]++ ;
 	ctrl->setKind(CONTROL_MESSAGE);
 	scheduleAt(Ref[myIndex],ctrl);
-
 }
 void MacLayer::collect_data(cMessage *pkt)
 {	

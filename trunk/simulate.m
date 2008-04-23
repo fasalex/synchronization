@@ -22,6 +22,12 @@ input_parameters ;
 #system("sed -e 's/#USERIF_LIBS=$(TKENV_LIBS)/USERIF_LIBS=$(TKENV_LIBS)/g' Makefile  > fasika.txt");
 #system("rm fasika.txt");
 #end
+if(run==1)
+system("cp Makefile_cmd Makefile");
+else 
+system("cp Makefile_tk Makefile");
+endif
+
 system("make") ;
 #system("rm *.vec") ;
 #system("rm *.sca") ;
@@ -67,6 +73,7 @@ fprintf(fidout, "mobileNet.playgroundSizeY = %d\n", playgroundSizeY);
 fprintf(fidout, "mobileNet.playgroundSizeZ = 0\n");
 fprintf(fidout, "mobileNet.numHosts = %d \n", number_of_nodes);
 fprintf(fidout, "mobileNet.Node[*].normalNic.limit = %d \n" , limit) ;
+fprintf(fidout, "mobileNet.Node[*].normalNic.jump = %d \n" , jump) ;
 fprintf(fidout, "mobileNet.Node[*].normalNic.algorithm = %d \n" , algorithm) ;
 fprintf(fidout, "mobileNet.Node[*].normalNic.gain = %f \n" , gain) ;
 fprintf(fidout, "mobileNet.Node[*].normalNic.hosts = %d \n\n", number_of_nodes);
@@ -253,6 +260,9 @@ endfor
 ######################################################################################################
 #### End of Simulation -- Deleting files 
 ######################################################################################################
+for(i=1:length(MainVector)-1)
+frequency(:,i) = MainVector(:,i+1) - MainVector(:, i) ;
+endfor 
 plot(std(MainVector));
 print(filename);
 #axis([0 500 0 1]);

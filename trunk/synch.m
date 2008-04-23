@@ -53,7 +53,7 @@ new = zeros(1,n) ;
 temp1 = zeros(1,n) ;
 temp2 = zeros(1,n) ;
 temp3 = zeros(1,n) ;
-temp4 = zeros(1,n) 
+temp4 = zeros(1,n) ;
 
 fired = 1 ; % Number of times the nodes fired 
 
@@ -148,7 +148,7 @@ end
 clf ;
 hold on ;
 plot(std_t4,'b') ; # Weight 
-plot(std_t3,'p') ; # Median from m-file
+%plot(std_t3,'p') ; # Median from m-file
 plot(std_t1,'r') ; # Weight with square
 #plot(std_t4,'*') ; # Weight Least square 
 plot(ref,'v');
