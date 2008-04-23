@@ -38,9 +38,9 @@ config log-save-filename	{omnetpp.out}
 config logwindow-scrollbacklines	{100000}
 config mainwin-geom	{1280x915+4+49}
 config mainwin-state	{normal}
-config rununtil-event	{100}
-config rununtil-mode	{Normal}
-config rununtil-time	{}
+config rununtil-event	{}
+config rununtil-mode	{Express (tracing off)}
+config rununtil-time	{6000000}
 config timeline-maxnumevents	{1000}
 config timeline-msgclassnamepattern	{*}
 config timeline-msgnamepattern	{*}

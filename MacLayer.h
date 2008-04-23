@@ -11,7 +11,7 @@ const int SIZE_OF_NETWORK = 100;
 const int clock_const = 32768 ;
 double temperature = 25 ;
 const int frame_length = 11;
-
+int jump ;
 
 class MacLayer:public BaseModule {
 private:
@@ -28,7 +28,7 @@ private:
 	double gain ;
 	cOutVector output_vec ;
 	bool change[];
-
+	double random_start ;
 protected:
 	MacToPhyInterface* phy;
 	

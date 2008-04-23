@@ -10,6 +10,7 @@ module Nic
 		start_time : numeric const,
 		algorithm : numeric const , 
 		gain : numeric const,
+		jump : numeric const, 
 		hosts: numeric const;
     gates:
 		in: radioIn; // radioIn gate for sendDirect
