@@ -1,11 +1,11 @@
 ###########################################################################################
 #######          INPUT PARAMETERS FOR THE SIMULATION                         ##############
 ###########################################################################################
-run = 2 ;                           ## 1 - commandline  2 - gui 
+run = 1 ;                           ## 1 - commandline  2 - gui 
 number_of_nodes = 16;              ## Number of Nodes - as the name describes it 
 jump = 1 ;                           ## jump to reduce the calculation burden 
-limit = 100 ;                       ## Number of periods to run the simulation - One period One second 
-cpu_time_limit = limit * 32768 * 0.1 / 100 ;  ## Number of events needed for "limit" 
+limit = 1000 ;                       ## Number of periods to run the simulation - One period One second 
+cpu_time_limit = limit * 32768 * 0.1 / 80000 ;  ## Number of events needed for "limit" 
 speed = 10 ;                         ##  In Kilometer per hour 
 updateInterval = 1000 ;             ## In simulation seconds or a cycle(1/32768)
 algorithm = 2 ;                     ## "mean" - 1 , "median" -2 , "weight" - 3 ;
