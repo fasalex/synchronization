@@ -8,7 +8,7 @@
 #include "MacPkt_m.h"
 
 const int SIZE_OF_NETWORK = 100;
-const int clock_const = 32768 ;
+const int clock_const = 1 ;
 double temperature = 25 ;
 const int frame_length = 11;
 int jump ;

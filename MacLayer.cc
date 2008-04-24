@@ -13,7 +13,7 @@ void MacLayer::initialize(int stage) {
 	gain = parentModule() ->par("gain");
 	jump = parentModule() ->par("jump") ;
 	BaseModule::initialize(stage);
-
+        
 	if(stage == 0) {
 		myIndex = parentModule()->par("id") ;
 		Period[myIndex] = 0 ;
@@ -25,18 +25,18 @@ void MacLayer::initialize(int stage) {
 		controlIn = findGate("lowerControlIn");
 		random_start = (double) parentModule()->par("start_time") / hostCount;
 		if(random_start < 0.5)
-		frequency[myIndex] = clock_const + clock_const*30*1e-6*random_start ;
+		frequency[myIndex] = clock_const + clock_const*random_start ;
 		else 
-		frequency[myIndex] = clock_const - clock_const*30*1e-6*random_start  ;
-		
-		phy = FindModule<MacToPhyInterface*>::findSubModule(this->parentModule());
+		frequency[myIndex] = clock_const - clock_const*random_start ;
 		
 	} 
+
+
 	else if(stage == 1) {
 		broadcast_time[myIndex] = parentModule()->par("start_time");
 		MacPkt* pkt = createMacPkt(frame_length);
-		scheduleAt((int)broadcast_time[myIndex], pkt);
-	
+		scheduleAt(broadcast_time[myIndex], pkt);
+
 		cMessage *ctrl = new cMessage("Control Message");
 		Ref[myIndex] = 0.5*clock_const ;
 		Period[myIndex]++ ;
@@ -49,7 +49,7 @@ void MacLayer::initialize(int stage) {
 void MacLayer::handleMessage(cMessage* msg) {
 	if( msg->kind() == BROADCAST_MESSAGE ){
 		log("Sending Broadcast Messages to the physical Layer ....");
-		output_vec.record(broadcast_time[myIndex]) ;			
+		output_vec.record(broadcast_time[myIndex]*1000000) ;			
 		sendDown(msg);
 	}
 	else if ( msg->kind() == CONTROL_MESSAGE){
@@ -159,7 +159,7 @@ void MacLayer::analyze_msg()
 	offset = 0 ;
 	broadcast_time[myIndex] = broadcast_time[myIndex] - gain*offset + frequency[myIndex] ;
 	MacPkt* pkt = createMacPkt(frame_length);
-	scheduleAt((int)broadcast_time[myIndex],pkt) ;
+	scheduleAt(broadcast_time[myIndex],pkt) ;
 	count[myIndex] = 0 ;
 	cMessage *ctrl = new cMessage("bla bla bla");
 	Ref[myIndex] = Ref[myIndex] + clock_const ;

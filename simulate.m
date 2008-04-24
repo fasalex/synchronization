@@ -140,7 +140,7 @@ j=0;
 endfor
 
 ### Changing to simulation speed 
-speed = speed * (1/32768) * (1/3.6) ;
+speed = speed * (1/3.6) ;
 fprintf(fidout, "mobileNet.Node[*].mobility.speed= %f\n", speed);
 fprintf(fidout, "mobileNet.Node[*].mobility.updateInterval= %f\n", updateInterval);
 fprintf(fidout, "mobileNet.Node[*].mobility.debug = 0 \n\n");
@@ -263,9 +263,9 @@ endfor
 for(i=1:length(MainVector)-1)
 frequency(:,i) = MainVector(:,i+1) - MainVector(:, i) ;
 endfor 
-plot(std(MainVector));
+plot(std(MainVector/30));
 print(filename);
 #axis([0 500 0 1]);
 endif
-system("rm *.vec");
+plot(std(MainVector/30)) ;
 disp("SIMULATION ENDED") ;
