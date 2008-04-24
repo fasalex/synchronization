@@ -84,7 +84,7 @@ t2 = t ;
 t3 = t ;
 t4 = t ;
 while (1) 
-	if(mod(fired,1) != 0)
+	if(mod(fired,5) != 0)
 		temp1(:) = 0 ;
 		temp2(:) = 0 ;
 		temp3(:) = 0 ;
