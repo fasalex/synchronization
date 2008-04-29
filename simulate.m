@@ -1,13 +1,26 @@
-%%
-clear all;
+clf ;
+for fasika = 1:4
+keep('fasika');
+algorithm = fasika ;
+if (fasika ==1)
+color = 'r' ;
+algor = 'Mean';
+elseif (fasika ==2 )
+color = 'g';
+algor = 'Median';
+elseif(fasika == 3)
+color = 'b';
+algor = 'Weight';
+elseif(fasika == 4)
+color = '*' ;
+algor = 'Weight Square' ;
+endif
 clc;
 prefix = "/home/fasika/mixim/trunk/examples/Output/"; % output directory
 model = "./New";               % simulation command
 %%
 %% get user input to construct omnetpp configration file
-
 input_parameters ;
-%%
 %% create ini file
 %%
 %%cmd = 1 ;
@@ -35,21 +48,13 @@ vectorname_m = "omnetpp.vec";
 scalarname = "omnetpp.sca";
 ininame = "omnetpp.ini";
 
-if(algorithm == 1)
-	algor = "mean-";
-elseif(algorithm == 2) 
-	algor = "median-";
-elseif(algorithm == 3)
-	algor = "weight-";
-endif
-
 spe = int2str(speed);
 gai = int2str(gain*10);
 no = int2str(number_of_nodes);
 ra = int2str(rand()*100 );
 alp = int2str(alpha*100);
 ext = '.eps';
-filename = strcat(prefix,algor,'s',spe,'-g',gai,'-n',no,'-alpha',alp,ext);
+filename = strcat(prefix,'s',spe,'-g',gai,'-n',no,'-alpha',alp,ext);
 
 playgroundSizeX = (sqrt(number_of_nodes) + 2) * 150  ; %% meters 
 playgroundSizeY = (sqrt(number_of_nodes) + 2) * 150  ; %% meters 
@@ -260,13 +265,11 @@ endfor
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%                   End of Simulation -- Deleting files 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-MainVector = MainVector / 1000000 ;
-for(i=1:length(MainVector)-1)
-frequency(:,i) = MainVector(:,i+1) - MainVector(:, i) ;
-endfor 
-plot(std(MainVector/30));
-print(filename);
-%axis([0 500 0 1]);
+hold on ;
+plot(std(MainVector/30),color);
 endif
-plot(std(MainVector/30)) ;
+endfor
+legend('Mean','Median','Weight','Weight Square');
+print(filename);
+hold on ;
 disp("SIMULATION ENDED") ;
