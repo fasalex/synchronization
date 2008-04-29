@@ -1,4 +1,5 @@
 #include "MacLayer.h"
+#include "math.h"
 //---omnetpp part----------------------
 Define_Module(MacLayer);
 
@@ -103,31 +104,26 @@ void MacLayer::analyze_msg()
 		break;}
 ////// Weight ....
 	case 4:{
-		double weight[SIZE_OF_NETWORK];
+				double weight[SIZE_OF_NETWORK];
 		double tempp[SIZE_OF_NETWORK][SIZE_OF_NETWORK] ;
-		double temp ;
-		double sum;
-
-		if(temp_varr[myIndex][0] < 0 ) 
-			temp = abs(temp_varr[myIndex][0]) ;
-		else 
-			temp = 0 ;
+		double sum = 0 ;
 
 		for(int af = 0 ; af < neigh ; af ++) {
-			sum = sum + temp + temp_varr[myIndex][af] ;
-			tempp[myIndex][af] = temp_varr[myIndex][af] + temp ;
+			tempp[myIndex][af] = abs(temp_varr[myIndex][af]-median);
+			sum = sum + tempp[myIndex][af] ;
 		}
-	
 		if(sum==0)
 			offset = 0 ;
 		else{
 		for (int m=0; m < neigh; m++){
-		         weight[neigh-m-1]=(tempp[myIndex][m]+temp) / sum ; 
+			 if(neigh != 1){
+		         weight[m]= (1 - tempp[myIndex][m]/sum)/(neigh-1) ; 
+			 }else
+			 weight[m] = 1 ;
+		  	 offset = offset + ( temp_varr[myIndex][m] * weight[m] ) ;
 		}
-		for(int n=0; n< neigh;n++)
-		  	offset = offset + tempp[myIndex][n] * weight[n] ;
 		}
-		offset = offset - temp ;
+		offset = offset * gain ;
 		break;}
 	case 3:{
 		double weight[SIZE_OF_NETWORK];
@@ -142,9 +138,10 @@ void MacLayer::analyze_msg()
 			offset = 0 ;
 		else{
 		for (int m=0; m < neigh; m++){
-			 if(neigh != 1)
+			 if(neigh != 1){
 		         weight[m]= (1 - tempp[myIndex][m]/sum)/(neigh-1) ; 
-			 else
+			 weight[m] = sqrt(weight[m]) ;
+			 }else
 			 weight[m] = 1 ;
 		  	 offset = offset + ( temp_varr[myIndex][m] * weight[m] ) ;
 		}
@@ -169,9 +166,9 @@ void MacLayer::analyze_msg()
 }
 void MacLayer::collect_data(cMessage *pkt)
 {	
-	simtime_t prop_delay = pkt->timestamp();
+
 	clock_drift = (temperature - 25 )* exp(-6) * 0.5 / 20 ;
-	temp_varr[myIndex][count[myIndex]] = broadcast_time[myIndex] - simTime() + prop_delay + clock_drift;
+	temp_varr[myIndex][count[myIndex]] = broadcast_time[myIndex] - simTime() +  clock_drift;
 	count[myIndex]++;
 	log("Recording the simulation values");
 //	output_vec.record(simTime()) ;
