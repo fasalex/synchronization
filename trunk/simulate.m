@@ -1,6 +1,6 @@
-clf ;
+figure; 
 for fasika = 1:4
-keep('fasika');
+%keep('fasika');
 algorithm = fasika ;
 if (fasika ==1)
 color = 'r' ;
@@ -231,7 +231,7 @@ endfor
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%     Data extracting from the scalar file ....
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%fidin = fopen(scalarname, "r", "native");
+%fidin = fopen(scalaaxis([0 1000 0 30])rname, "r", "native");
 %k=0;
 %if (fidin==-1)
 %  error("Unable to open the scalar file");
@@ -269,6 +269,7 @@ hold on ;
 plot(std(MainVector/30),color);
 endif
 endfor
+axis([0 limit 0 20])
 legend('Mean','Median','Weight','Weight Square');
 print(filename);
 hold on ;
