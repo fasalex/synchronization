@@ -1,10 +1,10 @@
 clear all ;
 
-%% ============== Defining Parameters =================== %%
+%% =========== Defining Parameters ================= %%
 
 n = input("Enter the number of nodes __  ") ;  % Number of Nodes 
 
-% ================ Assigning the variables ============== %%
+% ============== Assigning the variables ============ %%
 
 TRIAL = 100 ; % Number of periods to be displayed 
 REFERENCE_VALUE = 5 ; 
