@@ -46,7 +46,7 @@ void MacLayer::initialize(int stage) {
 void MacLayer::handleMessage(cMessage* msg) {
 	if( msg->kind() == BROADCAST_MESSAGE ){
 		log("Sending Broadcast Messages to the physical Layer ....");
-		output_vec.record(broadcast_time[myIndex]*1000000) ;			
+		output_vec.record(broadcast_time[myIndex]*1000000) ;
 		sendDown(msg);
 	}
 	else if ( msg->kind() == CONTROL_MESSAGE){
@@ -70,6 +70,7 @@ void MacLayer::analyze_msg()
 {	
 	log("Adjusting the offset of ") ;
 	int neigh = count[myIndex];
+        output_vec.record(neigh) ;
 	double total = 0 ;
 	for(int x = 0; x < neigh; x ++) {
 		for(int y = x+1; y < neigh; y ++) {
@@ -120,25 +121,30 @@ void MacLayer::analyze_msg()
 		offset = offset * gain ;
 		break;}
 	case 4:{
+		double maxx  ;
+		double fasika ;
 		double weight[SIZE_OF_NETWORK];
 		double tempp[SIZE_OF_NETWORK][SIZE_OF_NETWORK] ;
 		double sum = 0 ;
-
-		for(int af = 0 ; af < neigh ; af ++) {
+		temp_varr[myIndex][neigh] = 0 ;
+		for(int af = 0 ; af < neigh+1 ; af ++) {
 			tempp[myIndex][af] = abs(temp_varr[myIndex][af]-median);
 			sum = sum + tempp[myIndex][af] ;
 		}
+		if(tempp[myIndex][0] >= tempp[myIndex][neigh-1])
+		maxx = tempp[myIndex][0] ;
+		else 
+		maxx = tempp[myIndex][neigh-1] ;
+
 		if(sum==0)
 			offset = 0 ;
 		else{
-		for (int m=0; m < neigh; m++){
-			 if(neigh != 1){
-		         weight[m]= (1 - tempp[myIndex][m]/sum)/(neigh-1) ; 
-			 }else
-			 weight[m] = 1 ;
-		  	 offset = offset + (temp_varr[myIndex][m] * weight[m]) ;
+                fasika = ((neigh+1) * maxx) - sum ;
+		for (int m=0; m < neigh+1; m++){
+		         weight[m]= (maxx - tempp[myIndex][m]) / fasika ;
+			 offset = offset + (temp_varr[myIndex][m] * weight[m]) ;
 		}
-		}
+ 		}
 		offset = offset * gain ;
 		break;}
 	default:
@@ -149,7 +155,7 @@ void MacLayer::analyze_msg()
 	if(Period[myIndex]%jump != 0)
 	offset = 0 ;
 	broadcast_time[myIndex] = broadcast_time[myIndex] - gain*offset + frequency[myIndex] ;
-	
+
         MacPkt* pkt = createMacPkt(frame_length);
 	scheduleAt(broadcast_time[myIndex],pkt) ;
 	count[myIndex] = 0 ;

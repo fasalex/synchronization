@@ -1,20 +1,28 @@
-figure; 
+clf ;
+
+number_of_nodes = 16 ;
+rnd = rand(1,number_of_nodes) * 29 / 32768;
+
 for fasika = 1:4
-%keep('fasika');
-algorithm = fasika ;
+keep('fasika','number_of_nodes','rnd');
+gain = fasika * 0.1 + 0.5 ;
+
 if (fasika ==1)
 color = 'r' ;
-algor = 'Mean';
+%algor = 'Mean';
 elseif (fasika ==2 )
 color = 'g';
-algor = 'Median';
+%algor = 'Median';
 elseif(fasika == 3)
 color = 'b';
-algor = 'Weight';
+%algor = 'Weight';
 elseif(fasika == 4)
 color = '*' ;
-algor = 'Weight Square' ;
+%algor = 'Weight Square' ;
+%elseif(fasika==5)
+%color = '+';
 endif
+algor = 'Median' ;
 clc;
 prefix = "/home/fasika/mixim/trunk/examples/Output/"; % output directory
 model = "./New";               % simulation command
@@ -124,6 +132,9 @@ fprintf(fidout, "##############################\n");
 fprintf(fidout, "#			Host Parameters                        #\n");
 fprintf(fidout, "##############################\n");
 fprintf(fidout, "mobileNet.Node[*].normalNic.connectionManagerName = \"Channel\"\n");
+fprintf(fidout, "mobileNet.Node[*].mobility.angle = 2\n");
+fprintf(fidout, "mobileNet.Node[*].mobility.acceleration = 2 \n");
+
 i=0;
 j=0;
 squ = sqrt(number_of_nodes) ;
@@ -231,7 +242,7 @@ endfor
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%     Data extracting from the scalar file ....
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%fidin = fopen(scalaaxis([0 1000 0 30])rname, "r", "native");
+%fidin = fopen(scalarname, "r", "native");
 %k=0;
 %if (fidin==-1)
 %  error("Unable to open the scalar file");
@@ -266,11 +277,14 @@ endfor
 %%%%                   End of Simulation -- Deleting files 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 hold on ;
-plot(std(MainVector/30),color);
+MainVector1 = MainVector(:,1:2:997) ;
+MainVector2 = MainVector(:,2:2:998) ;
+plot(std(MainVector1/30),color);
 endif
 endfor
-axis([0 limit 0 20])
-legend('Mean','Median','Weight','Weight Square');
+legend('0.6','0.7','0.8','0.9','1');
+xlabel('period(sec)');
+ylabel('synchronization error(clock cycles)');
 print(filename);
 hold on ;
 disp("SIMULATION ENDED") ;
