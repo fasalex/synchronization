@@ -3,10 +3,10 @@ clf ;
 number_of_nodes = 16 ;
 rnd = rand(1,number_of_nodes) * 29 / 32768;
 
-for fasika = 1:4
+for fasika = 1:2
 keep('fasika','number_of_nodes','rnd');
 gain = fasika * 0.1 + 0.5 ;
-
+algorithm = 2 ;
 if (fasika ==1)
 color = 'r' ;
 %algor = 'Mean';
@@ -279,7 +279,7 @@ endfor
 hold on ;
 MainVector1 = MainVector(:,1:2:997) ;
 MainVector2 = MainVector(:,2:2:998) ;
-plot(std(MainVector1/30),color);
+semilogx(std(MainVector1/30),color);
 endif
 endfor
 legend('0.6','0.7','0.8','0.9','1');
