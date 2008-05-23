@@ -30,19 +30,6 @@ model = "./New";               % simulation command
 %% get user input to construct omnetpp configration file
 input_parameters ;
 %% create ini file
-%%
-%%cmd = 1 ;
-%if(cmd)
-%system("sed -e 's/%USERIF_LIBS=$(CMDENV_LIBS)/USERIF_LIBS=$(CMDENV_LIBS)/g' Makefile  > fasika.txt");
-%system("rm Makefile");
-%system("sed -e 's/alsdjfadofUSERIF_LIBS=$(TKENV_LIBS)/%USERIF_LIBS=$(TKENV_LIBS)/g' fasika.txt  > Makefile");
-%system("rm fasika.txt");
-%else
-%system("sed -e 's/USERIF_LIBS=$(CMDENV_LIBS)/%USERIF_LIBS=$(CMDENV_LIBS)/g' Makefile  > fasika.txt");
-%system("rm Makefile");
-%system("sed -e 's/%USERIF_LIBS=$(TKENV_LIBS)/USERIF_LIBS=$(TKENV_LIBS)/g' Makefile  > fasika.txt");
-%system("rm fasika.txt");
-%end
 if(run==1)
 system("cp Makefile_cmd Makefile");
 else 
@@ -50,8 +37,6 @@ system("cp Makefile_tk Makefile");
 endif
 
 system("make") ;
-%system("rm *.vec") ;
-%system("rm *.sca") ;
 vectorname_m = "omnetpp.vec";
 scalarname = "omnetpp.sca";
 ininame = "omnetpp.ini";
@@ -165,7 +150,7 @@ go = 1;%input("Do you wanna see the plot after simulation ? 1 / 0 ");
 %%
 %% run the simulations
 %%
-run_sim(model, ininame);
+system("./New") ;
 
 if(go == 1) 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -277,9 +262,7 @@ endfor
 %%%%                   End of Simulation -- Deleting files 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 hold on ;
-MainVector1 = MainVector(:,1:2:997) ;
-MainVector2 = MainVector(:,2:2:998) ;
-semilogx(std(MainVector1/30),color);
+semilogx(std(MainVector/30),color);
 endif
 endfor
 legend('0.6','0.7','0.8','0.9','1');

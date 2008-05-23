@@ -46,4 +46,5 @@ config timeline-msgclassnamepattern	{*}
 config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
+inspector "mobileNet" "Network" "2" "918x676+177+187"
 
