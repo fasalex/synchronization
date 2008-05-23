@@ -24,11 +24,7 @@ void MacLayer::initialize(int stage) {
 		controlOut = findGate("lowerControlOut");
 		controlIn = findGate("lowerControlIn");
 		random_start = (double) parentModule()->par("start_time") / hostCount;
-		if(random_start < 0.5)
-		frequency = clock_const + clock_const*random_start ;
-		else 
-		frequency = clock_const - clock_const*random_start ;
-		
+		frequency = clock_const + clock_const*0.001*0.06*(0.5-random_start) ;
 	} 
 	else if(stage == 1) {
 		broadcast_time = parentModule()->par("start_time");
@@ -36,7 +32,7 @@ void MacLayer::initialize(int stage) {
 		scheduleAt(broadcast_time, pkt);
 
 		cMessage *ctrl = new cMessage("Control Message");
-		Ref = 0.5*clock_const ;
+		Ref = broadcast_time * 1.5 ;
 		Period++ ;
 		ctrl->setKind(CONTROL_MESSAGE);
 		scheduleAt(Ref,ctrl);
@@ -70,7 +66,6 @@ void MacLayer::analyze_msg()
 {	
 	log("Adjusting the offset of ") ;
 	int neigh = count;
-        output_vec.record(neigh) ;
 	double total = 0 ;
 	for(int x = 0; x < neigh; x ++) {
 		for(int y = x+1; y < neigh; y ++) {
@@ -153,14 +148,15 @@ void MacLayer::analyze_msg()
 	}
 
 	if(Period%jump != 0)
-	offset = 0 ;
+		offset = 0 ;
 	broadcast_time = broadcast_time - gain*offset + frequency ;
 
         MacPkt* pkt = createMacPkt(frame_length);
 	scheduleAt(broadcast_time,pkt) ;
 	count = 0 ;
+
 	cMessage *ctrl = new cMessage("bla bla");
-	Ref = Ref + clock_const ;
+	Ref = Ref - gain*offset + frequency ;
 	Period++ ;
 	ctrl->setKind(CONTROL_MESSAGE);
 	scheduleAt(Ref,ctrl);
@@ -174,8 +170,7 @@ void MacLayer::collect_data(cMessage *pkt)
 }
 void MacLayer::finish()
 {
-	double period = broadcast_time ;
-	recordScalar("Time at last", period );
+	recordScalar("Time at last", broadcast_time);
 }
 
 void MacLayer::log(std::string msg)
