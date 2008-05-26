@@ -19,6 +19,7 @@ void MacLayer::initialize(int stage) {
 		Period = 0 ;
 		count = 0;
 		Period = 0 ;
+		Ref = 0 ;
 		dataOut = findGate("lowerGateOut");
 		dataIn = findGate("lowerGateIn");
 		controlOut = findGate("lowerControlOut");
@@ -32,7 +33,7 @@ void MacLayer::initialize(int stage) {
 		scheduleAt(broadcast_time, pkt);
 
 		cMessage *ctrl = new cMessage("Control Message");
-		Ref = broadcast_time * 1.5 ;
+		Ref = broadcast_time + 0.5*frequency ;
 		Period++ ;
 		ctrl->setKind(CONTROL_MESSAGE);
 		scheduleAt(Ref,ctrl);
@@ -149,21 +150,28 @@ void MacLayer::analyze_msg()
 
 	if(Period%jump != 0)
 		offset = 0 ;
+	if(offset > (0.5*frequency/gain)) 
+		offset = 0 ;
+
 	broadcast_time = broadcast_time - gain*offset + frequency ;
+	
+	Ref = Ref-gain*offset + frequency ;
 
         MacPkt* pkt = createMacPkt(frame_length);
 	scheduleAt(broadcast_time,pkt) ;
-	count = 0 ;
 
 	cMessage *ctrl = new cMessage("bla bla");
-	Ref = Ref - gain*offset + frequency ;
-	Period++ ;
+	Period++;
 	ctrl->setKind(CONTROL_MESSAGE);
 	scheduleAt(Ref,ctrl);
+
+	count = 0 ;
+
 }
 void MacLayer::collect_data(cMessage *pkt)
 {	
-	clock_drift = (temperature - 25 )* exp(-6) * 0.5 / 20 ;
+	clock_drift = (temperature - 25 )* exp(-6) * 0.5 / 20;
+	clock_drift = 0 ;
 	temp_varr[count] = broadcast_time - simTime() +  clock_drift;
 	count++;
 	log("Recording the simulation values");

@@ -3,9 +3,9 @@ clf ;
 number_of_nodes = 16 ;
 rnd = rand(1,number_of_nodes) * 29 / 32768;
 
-for fasika = 1:2
+for fasika = 1:1
 keep('fasika','number_of_nodes','rnd');
-gain = fasika * 0.1 + 0.5 ;
+gain = fasika * 0.1 + 0.65 ;
 algorithm = 2 ;
 if (fasika ==1)
 color = 'r' ;
@@ -49,8 +49,8 @@ alp = int2str(alpha*100);
 ext = '.eps';
 filename = strcat(prefix,'s',spe,'-g',gai,'-n',no,'-alpha',alp,ext);
 
-playgroundSizeX = (sqrt(number_of_nodes) + 2) * 150  ; %% meters 
-playgroundSizeY = (sqrt(number_of_nodes) + 2) * 150  ; %% meters 
+playgroundSizeX = (sqrt(number_of_nodes) + 2) * 100  ; %% meters 
+playgroundSizeY = (sqrt(number_of_nodes) + 2) * 100  ; %% meters 
 
 fidout = fopen(ininame, "w", "native");
 fprintf(fidout, "[General]\n");
@@ -262,10 +262,10 @@ endfor
 %%%%                   End of Simulation -- Deleting files 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 hold on ;
-semilogx(std(MainVector/30),color);
+plot(std(MainVector/30),color);
 endif
 endfor
-legend('0.6','0.7','0.8','0.9','1');
+%legend('0.6','0.7','0.8','0.9','1');
 xlabel('period(sec)');
 ylabel('synchronization error(clock cycles)');
 print(filename);

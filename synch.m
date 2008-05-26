@@ -147,12 +147,12 @@ while (1)
 end
 clf ;
 hold on ;
-plot(std_t4,'b') ; # Weight 
-%plot(std_t3,'p') ; # Median from m-file
-plot(std_t1,'r') ; # Weight with square
-#plot(std_t4,'*') ; # Weight Least square 
+plot(std_t1,'b') ; # Weight 
+plot(std_t3,'p') ; # Median from m-file
+%plot(std_t2,'r') ; # Weight with square
+plot(std_t4,'*') ; # Weight Least square 
 plot(ref,'v');
-legend("Weight","Median","Weight with square ");#,"Weight factor- Least Square");
+legend("Weight","Median","Least Square Curve fitting");
 xlabel("Number of firing times ");
 ylabel("Standard Deviation " ) ;
 axis([1 TRIAL]);
