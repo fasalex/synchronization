@@ -26,7 +26,7 @@ endif
 
 yy = wei.*y ;
 uu = wei2.*y ;
-WeightyP = sum(yy) ;
+%WeightyP = sum(yy) ;
 Weighty = sum(uu) ;
 
 %[Mean Median] = calculate_weight(pos,neg);
@@ -39,5 +39,20 @@ Weighty = sum(uu) ;
 ######### pos(t) = pos(t) - (max_drift/len_pos)* (t-1) ;
 ######### endfor 
 ######### [Weighty WeightyP] = calculate_weight(pos,neg);
+n = length(y);
+x = 1:length(y) ;
+offset = y(1) ;
+if(offset < 0) 
+y = y - offset ;
+endif 
 
+y = sort(y);
+
+temp1 = n*sum(y.*log(x)) - sum(y*sum(log(x))) ;
+temp2 = (n*sum((log(x)).^2) - sum(log(x)).^2) ;
+
+b = temp1 / temp2 ;
+a = ( sum(y) - b*sum(log(x))) / n ;
+
+WeightyP = (a + b.*log(n/2)) + offset ;
 
