@@ -30,8 +30,7 @@ void MacLayer::initialize(int stage) {
 		ev << frequency*1000000 << endl ;
 	} 
 	else if(stage == 1) {
-		broadcast_time = parentModule()->par("start_time");
-		broadcast_time = 0 ;
+		broadcast_time = random_start*10;
 		MacPkt* pkt = createMacPkt(frame_length);
 		scheduleAt(broadcast_time, pkt);
 
@@ -51,13 +50,11 @@ void MacLayer::handleMessage(cMessage* msg) {
 	}
 	else if ( msg->kind() == CONTROL_MESSAGE){
 		logg("Control Message Received - Updating the period ...") ;
-		if((Period!=periodCount))
-		     analyze_msg();
-		else{ 
-		     callFinish() ;
-		}delete msg;
+		analyze_msg();
+		delete msg;
 	}else{	
 		logg("Collecting the offsets from Neighbours ....");
+		if((simTime()<500)&&(dblrand() < 0.4)){}else
 		collect_data(msg);
 		delete msg ;
 	}

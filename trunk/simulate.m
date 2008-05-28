@@ -5,11 +5,10 @@ number_of_nodes = 16 ;
 rnd = rand(1,number_of_nodes) ;
 hold on ;
 
-for fasika = 1:6
+for fasika = 1:1
 
 keep('fasika','number_of_nodes','rnd');
 algorithm = 2  ;
-gain = fasika * 0.1 + 0.4 +0.1;
 if (fasika == 1)
 color = 'b' ;
 elseif(fasika == 2 )
@@ -57,7 +56,7 @@ fidout = fopen(ininame, "w", "native");
 fprintf(fidout, "[General]\n");
 fprintf(fidout, "preload-ned-files = *.ned @nedincludes.lst\n");
 fprintf(fidout, "network = mobileNet\n");
-fprintf(fidout, "cpu-time-limit = %d\n\n", cpu_time_limit);
+fprintf(fidout, "sim-time-limit = %d\n\n", sim_time_limit);
 
 fprintf(fidout, "[Cmdenv]\n");
 fprintf(fidout, "express-mode = %s\n", express);
@@ -266,7 +265,6 @@ plot(std(MainVector/30),color);
 endfor
 xlabel('period(sec)');
 ylabel('synchronization error(clock cycles)');
-axis([0 limit 0 50])
 legend("0.5","0.6","0.7","0.8","0.9","1");
 print(filename);
 hold on ;
