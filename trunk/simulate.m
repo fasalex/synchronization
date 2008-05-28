@@ -5,19 +5,23 @@ number_of_nodes = 16 ;
 rnd = rand(1,number_of_nodes) ;
 hold on ;
 
-for fasika = 1:4
+for fasika = 1:6
 
 keep('fasika','number_of_nodes','rnd');
-algorithm = fasika  ;
-
+algorithm = 2  ;
+gain = fasika * 0.1 + 0.4 +0.1;
 if (fasika == 1)
 color = 'b' ;
 elseif(fasika == 2 )
 color = 'r';
 elseif(fasika == 3)
-color = '*';
+color = 'g';
 elseif(fasika == 4)
-color = 'v';
+color = 'm';
+elseif(fasika ==5)
+color = 'c';
+elseif(fasika ==6)
+color = 'w';
 endif
 
 prefix = "/home/fasika/mixim/trunk/examples/Output/"; % output directory
@@ -263,7 +267,7 @@ endfor
 xlabel('period(sec)');
 ylabel('synchronization error(clock cycles)');
 axis([0 limit 0 50])
-lable("Average","Median","LSquare");
+legend("0.5","0.6","0.7","0.8","0.9","1");
 print(filename);
 hold on ;
 disp("SIMULATION ENDED") ;
