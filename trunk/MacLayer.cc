@@ -24,11 +24,14 @@ void MacLayer::initialize(int stage) {
 		dataIn = findGate("lowerGateIn");
 		controlOut = findGate("lowerControlOut");
 		controlIn = findGate("lowerControlIn");
-		random_start = (double) parentModule()->par("start_time") / hostCount;
-		frequency = clock_const + clock_const*0.001*0.06*(0.5-random_start) ;
+		random_start = (double) parentModule()->par("start_time") * 29/327868 ;
+		double t = parentModule()->par("start_time"); 
+		frequency = clock_const + clock_const*0.001*0.06*(0.5-t) ;
+		ev << frequency*1000000 << endl ;
 	} 
 	else if(stage == 1) {
 		broadcast_time = parentModule()->par("start_time");
+		broadcast_time = 0 ;
 		MacPkt* pkt = createMacPkt(frame_length);
 		scheduleAt(broadcast_time, pkt);
 
@@ -42,19 +45,19 @@ void MacLayer::initialize(int stage) {
 
 void MacLayer::handleMessage(cMessage* msg) {
 	if( msg->kind() == BROADCAST_MESSAGE ){
-		log("Sending Broadcast Messages to the physical Layer ....");
+		logg("Sending Broadcast Messages to the physical Layer ....");
 		output_vec.record(broadcast_time*1000000) ;
 		sendDown(msg);
 	}
 	else if ( msg->kind() == CONTROL_MESSAGE){
-		log("Control Message Received - Updating the period ...") ;
+		logg("Control Message Received - Updating the period ...") ;
 		if((Period!=periodCount))
 		     analyze_msg();
 		else{ 
 		     callFinish() ;
 		}delete msg;
 	}else{	
-		log("Collecting the offsets from Neighbours ....");
+		logg("Collecting the offsets from Neighbours ....");
 		collect_data(msg);
 		delete msg ;
 	}
@@ -63,11 +66,24 @@ void MacLayer::sendDown(cMessage *pkt)
 {
 	send(pkt, dataOut);
 }
+
+void MacLayer::collect_data(cMessage *pkt)
+{	
+	clock_drift = (temperature - 25 )* exp(-6) * 0.5 / 20;
+	clock_drift = 0 ;
+	temp_varr[count] = broadcast_time - simTime() +  clock_drift;
+	count++;
+	logg("Recording the simulation values");
+}
+
 void MacLayer::analyze_msg()
 {	
-	log("Adjusting the offset of ") ;
+	logg("Adjusting the offset of ") ;
+
 	int neigh = count;
 	double total = 0 ;
+	double offset = 0 ;
+
 	for(int x = 0; x < neigh; x ++) {
 		for(int y = x+1; y < neigh; y ++) {
      				if(temp_varr[y] < temp_varr[x]) {
@@ -78,9 +94,16 @@ void MacLayer::analyze_msg()
 		}
                 total = total + temp_varr[x] ;
         }
-	double offset = 0 ;
+	
 	int medium_value = (int) neigh / 2 ;
-	double median = 0.5 *(temp_varr[medium_value - 1] + temp_varr[medium_value]) ;
+	double median;
+	if(neigh ==0)
+		median = 0 ;
+	else if ( neigh == 1)
+		median = temp_varr[neigh] ;
+	else
+	 	median = 0.5 *(temp_varr[medium_value - 1] + temp_varr[medium_value]) ;
+
 	switch(algorithm){
 	case 1:{
 		double average ;
@@ -94,29 +117,6 @@ void MacLayer::analyze_msg()
 		offset = median ;
 		break;}
 	case 3:{
-		double weight[SIZE_OF_NETWORK];
-		double tempp[SIZE_OF_NETWORK] ;
-		double sum = 0 ;
-
-		for(int af = 0 ; af < neigh ; af ++) {
-			tempp[af] = abs(temp_varr[af]-median);
-			sum = sum + tempp[af] ;
-		}
-		if(sum==0)
-			offset = 0 ;
-		else{
-		for (int m=0; m < neigh; m++){
-			 if(neigh != 1){
-		         weight[m]= (1 - tempp[m]/sum)/(neigh-1) ; 
-			 weight[m] = sqrt(weight[m]) ;
-			 }else
-			 weight[m] = 1 ;
-		  	 offset = offset + ( temp_varr[m] * weight[m] ) ;
-		}
-		}
-		offset = offset * gain ;
-		break;}
-	case 4:{
 		double maxx  ;
 		double fasika ;
 		double weight[SIZE_OF_NETWORK];
@@ -140,9 +140,33 @@ void MacLayer::analyze_msg()
 		         weight[m]= (maxx - tempp[m]) / fasika ;
 			 offset = offset + (temp_varr[m] * weight[m]) ;
 		}
+		offset = offset * gain;
  		}
-		offset = offset * gain ;
 		break;}
+	case 4:{
+		double a,b,sum,sumsq,sumprod,sumprodsum = 0;
+		int varr = 1 ;
+		bool change = false ;	
+		
+		for(int k=0 ; k<count ; k++){
+			if((temp_varr[k] >= 0) && (change == false)){
+				varr = k+1 ;
+				change = true;
+			}
+			sum += log(k+1);
+			sumsq += pow(log(k+1),2);
+			sumprod += temp_varr[k] * log(k+1);	
+		}
+
+		for(int k=0;k<count;k++){
+			sumprodsum += temp_varr[k]*sum ;
+		}
+
+		b = (count*sumprod - sumprodsum)/(count*sumsq - (sum*sum));
+		a = (total - b*sum) / count ;
+		varr = abs(count/2 - varr) ;
+		offset = a + b*log(varr)  ;
+	}
 	default:
 		offset = 0;
 		break;
@@ -154,34 +178,29 @@ void MacLayer::analyze_msg()
 		offset = 0 ;
 
 	broadcast_time = broadcast_time - gain*offset + frequency ;
-	
-	Ref = Ref-gain*offset + frequency ;
+	Ref = Ref - gain*offset + frequency ;
 
         MacPkt* pkt = createMacPkt(frame_length);
 	scheduleAt(broadcast_time,pkt) ;
 
-	cMessage *ctrl = new cMessage("bla bla");
+	cMessage *ctrl = new cMessage("Control Message");
 	Period++;
 	ctrl->setKind(CONTROL_MESSAGE);
 	scheduleAt(Ref,ctrl);
 
-	count = 0 ;
+	for(int k=0;k<count;k++)
+		temp_varr[count] = 0 ;
+	
+ 	count = 0 ;
 
 }
-void MacLayer::collect_data(cMessage *pkt)
-{	
-	clock_drift = (temperature - 25 )* exp(-6) * 0.5 / 20;
-	clock_drift = 0 ;
-	temp_varr[count] = broadcast_time - simTime() +  clock_drift;
-	count++;
-	log("Recording the simulation values");
-}
+
 void MacLayer::finish()
 {
 	recordScalar("Time at last", broadcast_time);
 }
 
-void MacLayer::log(std::string msg)
+void MacLayer::logg(std::string msg)
 {
 	ev << "[Node " << myIndex << "] - MacLayer: " << msg << endl;
 }

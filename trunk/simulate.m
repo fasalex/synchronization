@@ -1,35 +1,32 @@
 clf ;
-
+system("rm *.vec");
+system("rm *.sca");
 number_of_nodes = 16 ;
-rnd = rand(1,number_of_nodes) * 29 / 32768;
+rnd = rand(1,number_of_nodes) ;
+hold on ;
 
-for fasika = 1:1
+for fasika = 1:4
+
 keep('fasika','number_of_nodes','rnd');
-gain = fasika * 0.1 + 0.65 ;
-algorithm = 2 ;
-if (fasika ==1)
-color = 'r' ;
-%algor = 'Mean';
-elseif (fasika ==2 )
-color = 'g';
-%algor = 'Median';
+algorithm = fasika  ;
+
+if (fasika == 1)
+color = 'b' ;
+elseif(fasika == 2 )
+color = 'r';
 elseif(fasika == 3)
-color = 'b';
-%algor = 'Weight';
+color = '*';
 elseif(fasika == 4)
-color = '*' ;
-%algor = 'Weight Square' ;
-%elseif(fasika==5)
-%color = '+';
+color = 'v';
 endif
-algor = 'Median' ;
-clc;
+
 prefix = "/home/fasika/mixim/trunk/examples/Output/"; % output directory
 model = "./New";               % simulation command
-%%
-%% get user input to construct omnetpp configration file
+
 input_parameters ;
+
 %% create ini file
+
 if(run==1)
 system("cp Makefile_cmd Makefile");
 else 
@@ -49,8 +46,8 @@ alp = int2str(alpha*100);
 ext = '.eps';
 filename = strcat(prefix,'s',spe,'-g',gai,'-n',no,'-alpha',alp,ext);
 
-playgroundSizeX = (sqrt(number_of_nodes) + 2) * 100  ; %% meters 
-playgroundSizeY = (sqrt(number_of_nodes) + 2) * 100  ; %% meters 
+playgroundSizeX = (sqrt(number_of_nodes) + 2) * 150  ; %% meters 
+playgroundSizeY = (sqrt(number_of_nodes) + 2) * 150  ; %% meters 
 
 fidout = fopen(ininame, "w", "native");
 fprintf(fidout, "[General]\n");
@@ -150,9 +147,9 @@ go = 1;%input("Do you wanna see the plot after simulation ? 1 / 0 ");
 %%
 %% run the simulations
 %%
-system("./New") ;
 
-if(go == 1) 
+run_sim(model,ininame) ;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Vector file split to individual vector files
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -261,13 +258,12 @@ endfor
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%                   End of Simulation -- Deleting files 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-hold on ;
 plot(std(MainVector/30),color);
-endif
 endfor
-%legend('0.6','0.7','0.8','0.9','1');
 xlabel('period(sec)');
 ylabel('synchronization error(clock cycles)');
+axis([0 limit 0 50])
+lable("Average","Median","LSquare");
 print(filename);
 hold on ;
 disp("SIMULATION ENDED") ;
