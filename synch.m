@@ -129,7 +129,7 @@ while (1)
 
 		[Mean3 Median3 Weighty3 WeightyP3] = weight(PHASE_ERROR3) ;
 		temp3(i) = Median3 ;
- 		PHASE_ERROR4 ;
+
 		[Mean4 Median4 Weighty4 WeightyP4] = weight(PHASE_ERROR4) ;
 		temp4(i) = WeightyP4;
 
@@ -148,11 +148,11 @@ end
 clf ;
 hold on ;
 plot(std_t1,'b') ; # Weight 
-plot(std_t3,'p') ; # Median from m-file
-%plot(std_t2,'r') ; # Weight with square
-plot(std_t4,'*') ; # Weight Least square 
+plot(std_t2,'r') ; # Weight with square
+plot(std_t3,'*') ; # Median from m-file
+plot(std_t4,'p') ; # Weight Least square 
 plot(ref,'v');
-legend("Weight","Median","Least Square Curve fitting");
+legend("Weight","Mean","Median","Least Square Curve fitting","Reference");
 xlabel("Number of firing times ");
 ylabel("Standard Deviation " ) ;
 axis([1 TRIAL]);

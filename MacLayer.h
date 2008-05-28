@@ -59,7 +59,7 @@ public:
 /*	void broadCastPacket();	
 	void handleMacPkt(cMessage* pkt);
 	void handleTXOver();*/
-	void log(std::string msg);
+	void logg(std::string msg);
 };
 
 #endif /*MACLAYER_H_*/
