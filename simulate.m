@@ -1,14 +1,16 @@
-clf ;
+clf;
 system("rm *.vec");
 system("rm *.sca");
+
 number_of_nodes = 16 ;
 rnd = rand(1,number_of_nodes) ;
 hold on ;
-
-for fasika = 1:1
-
+for fasika = 1:5
 keep('fasika','number_of_nodes','rnd');
 algorithm = 2  ;
+gain = 0.75
+speed = fasika * 20 -20  ;
+
 if (fasika == 1)
 color = 'b' ;
 elseif(fasika == 2 )
@@ -19,16 +21,21 @@ elseif(fasika == 4)
 color = 'm';
 elseif(fasika ==5)
 color = 'c';
-elseif(fasika ==6)
-color = 'w';
 endif
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+run = 1 ;                           %% 1 - commandline  2 - gui 
+jump = 1 ;                          %% jump to reduce the calculation burden 
+sim_time_limit = 1000;		    %% Number of events needed for "limit"                        
+updateInterval = 1;                 %% In simulation seconds 
+express = "yes" ;                   %% Enable or Disable express mode 
+alpha = 2.50 ;                      %% Channel factor - attenuation if you might say ...
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% create ini file
 
 prefix = "/home/fasika/mixim/trunk/examples/Output/"; % output directory
 model = "./New";               % simulation command
-
-input_parameters ;
-
-%% create ini file
 
 if(run==1)
 system("cp Makefile_cmd Makefile");
@@ -70,7 +77,6 @@ fprintf(fidout, "mobileNet.playgroundSizeX = %d\n", playgroundSizeX);
 fprintf(fidout, "mobileNet.playgroundSizeY = %d\n", playgroundSizeY);
 fprintf(fidout, "mobileNet.playgroundSizeZ = 0\n");
 fprintf(fidout, "mobileNet.numHosts = %d \n", number_of_nodes);
-fprintf(fidout, "mobileNet.Node[*].normalNic.limit = %d \n" , limit) ;
 fprintf(fidout, "mobileNet.Node[*].normalNic.jump = %d \n" , jump) ;
 fprintf(fidout, "mobileNet.Node[*].normalNic.algorithm = %d \n" , algorithm) ;
 fprintf(fidout, "mobileNet.Node[*].normalNic.gain = %f \n" , gain) ;
@@ -261,11 +267,13 @@ endfor
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%                   End of Simulation -- Deleting files 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+MainVector(:,sim_time_limit+1) = 0 ;
 plot(std(MainVector/30),color);
 endfor
 xlabel('period(sec)');
-ylabel('synchronization error(clock cycles)');
-legend("0.5","0.6","0.7","0.8","0.9","1");
+ylabel('Synchronization error(clock cycles)');
+legend("0","20","40","60","80");
+%axis([0 sim_time_limit 0 30]);
 print(filename);
 hold on ;
 disp("SIMULATION ENDED") ;

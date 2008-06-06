@@ -6,7 +6,6 @@ module Nic
     parameters:
 		id: numeric const, //unique id of nic
 		connectionManagerName: string, 	//name of the ConnectionManager module
-		limit : numeric const,
 		start_time : numeric const,
 		algorithm : numeric const , 
 		gain : numeric const,
