@@ -15,7 +15,7 @@ int jump ;
 
 class MacLayer:public BaseModule {
 private:
-	
+	double rnd ;
 	double broadcast_time;
 	double frequency ;
 	double temp_varr[SIZE_OF_NETWORK];
