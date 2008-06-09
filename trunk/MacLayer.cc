@@ -1,6 +1,8 @@
 #include "MacLayer.h"
 #include "math.h"
+
 //---omnetpp part----------------------
+
 Define_Module(MacLayer);
 
 //---intialisation---------------------
@@ -12,6 +14,7 @@ void MacLayer::initialize(int stage) {
        gain = parentModule() ->par("gain");
        jump = parentModule() ->par("jump") ;
        BaseModule::initialize(stage);
+       rnd = parentModule()->par("start_time") ;
        
        if(stage == 0) {
                myIndex = parentModule()->par("id") ;
@@ -23,11 +26,8 @@ void MacLayer::initialize(int stage) {
                dataIn = findGate("lowerGateIn");
                controlOut = findGate("lowerControlOut");
                controlIn = findGate("lowerControlIn");
-	       double rnd = parentModule()->par("start_time") ;
-               random_start = (double) parentModule()->par("start_time") * 29/32768 ;
-               double t = parentModule()->par("start_time");
+               random_start = rnd * 29/32768 ;
                frequency = clock_const + clock_const*30*1e-6*(rnd-0.5);  
-               ev << frequency*1000000 << endl ;
        }
        else if(stage == 1) {
                broadcast_time = random_start;
@@ -95,7 +95,7 @@ void MacLayer::analyze_msg()
        int medium_value = (int) neigh / 2 ;
        double median;
        double add_on ;
-       add_on = 0 ;
+       add_on = temp_varr[0] ;
 
        for(int k=0;k<neigh;k++)
 	 temp_varr[k] = temp_varr[k] - add_on ;
@@ -111,7 +111,8 @@ void MacLayer::analyze_msg()
 
 // Weighted Measurments ............
 
-       case 1:{ double maxx  ;
+       case 1:{ 
+		double maxx  ;
                 double fasika ;
                 double weight[SIZE_OF_NETWORK];
                 double tempp[SIZE_OF_NETWORK] ;
@@ -136,14 +137,14 @@ void MacLayer::analyze_msg()
 			else 
 			 weight[m] = 0 ;
                          offset = offset + (temp_varr[m] * weight[m]) ;
-                }
-                offset = offset*gain ;
-                }
+                }}
+		offset += add_on ;
                 break;}
        case 2:{
 
 // Median .........with a gain 
                offset = median ;
+               offset += add_on ;
                break;}
 
        case 3:{
@@ -162,84 +163,106 @@ void MacLayer::analyze_msg()
 		double U;  // control factor 
 		// Initialize the matrices 
 
-		x = 1 ; // Initial estimate 
-		P = 1 ; // Initial estimate of covariance matrix - error covariance matrix
+		x = 1e-6 ; // Initial estimate 
+		P = 0 ; // Initial estimate of covariance matrix - error covariance matrix
 
 		phi = 1 ;
 		Q = 1 ;
 		R = 1 ;
 		H = 1 ;
 		B = 0 ;
+
 		// Loop 
+
 		for(int i=0;i<neigh;i++){
-		// Time update "PREDICT"
+			
+			// Time update "PREDICT"
 
-		x = phi*x + B*U ;
-		P = (phi * P) * (1/phi) + Q ;
+			x = phi*x + B*U ;
+			P = (phi * P) * (1/phi) + Q ;
 
-		// Measurment Update "CORRECT"
+			// Measurment Update "CORRECT"
 
-		// Compute Kalman gain
+			// Compute Kalman gain
 
-		Ka = P * H ; // ( ( H * P * H ) + R);	
+			Ka = P * H ; // ( ( H * P * H ) + R);	
 
-		// update estimate with measurement
+			// update estimate with measurement
 
-		x = x + Ka * (z - (H * x) );
+			x = x + Ka * (temp_varr[i] - (H * x) );
 
-		// update the error covariance
+			// update the error covariance
 
-		P = ( 1 - (Ka * H)) * P;	
-
-		//endloop 
-		}
-		offset = x *1e-6 ;
-		offset = 1e-6;
+			P = ( 1 - (Ka * H)) * P;	
+			}
+			offset = x ;
+          		offset += add_on ;
                break;}
        case 4:{
 
-// Curve fitting - logartithmic 
+// Curve fitting - logarithmic 
 
-               double a,b,sum,sumsq,sumprod,sumprodsum = 0;
+               double a,b,sum,sumsq,sumprod,sumprodsum,sumy = 0;
                int varr = 1 ;
                bool change = false ;  
-               
+               double cmp = 30e-6 ;
                for(int k=0 ; k<count ; k++){
                        if((temp_varr[k] >= 0) && (change == false)){
                                varr = k+1 ;
                                change = true;
                        }
+		       sumy += (temp_varr[k] + cmp);
                        sum += log(k+1);
                        sumsq += pow(log(k+1),2);
-                       sumprod += temp_varr[k] * log(k+1);    
+                       sumprod += (temp_varr[k]+cmp) * log(k+1);   
                }
 
                for(int k=0;k<count;k++){
-                       sumprodsum += temp_varr[k]*sum ;
+                       sumprodsum += (temp_varr[k] + cmp)*sum ;
                }
 
-               b = (count*sumprod - sumprodsum)/(count*sumsq - (sum*sum));
-               a = (total - b*sum) / count ;
-               varr = abs(count/2 - varr) ;
-               offset = a + b*log(varr)  ;
-               offset = 1e-6 ;
+               b = (count*sumprod - sumy*sum)/(count*sumsq - (sum*sum));
+               a = (sumy - b*sum) / count ;
+               offset = a + b*log((double)count/2) ;
+	       offset = offset - cmp ;	
+               offset += add_on ;
        }
        case 5:{
+
 // MMSE estimator ....
 
-		offset = 0 ;
-	       break;
+		double x;    // estimated value of the variable to be considered 
+		double W;    // weight matrix
+		double H;    // coefficient matrix  
 
+		x = 1e-6 ;   // Initial estimate 
+		W = 1 ;      // Initialization of the weight matrix
+		H = 1 ;
+		
+  		// Loop 
+
+		for(int i=0;i<neigh;i++){
+			x = (H*W*temp_varr[i])/(H*W*H) ;
+			W = W * 1 ;
+			H = H * 1 ;
+		}
+		offset = x ;
+		offset += add_on ;
+	        break;
 	}
        default:
                offset = 0;
                break;
        }
-//	offset = 0 ;
+/*
+       offset = 0 ;
        if(Period%jump != 0)
                offset = 0 ;
-//      if(offset > (0.5*frequency/gain))  offset = 0 ;
-       offset = offset + add_on ;
+
+       if (ev.isGUI())
+    		bubble("Going down!");
+       cDisplayString *dispStr = displayString();
+       displayString -> */
        broadcast_time = broadcast_time - gain*offset + frequency ;
        Ref = Ref - gain*offset + frequency ;
 
@@ -252,8 +275,8 @@ void MacLayer::analyze_msg()
        scheduleAt(Ref,ctrl);
 
        for(int k=0;k<count;k++)
-               temp_varr[count] = 0 ;
-       
+               temp_varr[count] = 0 ;       
+
        count = 0 ;
 
 }

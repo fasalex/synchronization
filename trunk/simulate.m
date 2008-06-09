@@ -3,13 +3,28 @@ system("rm *.vec");
 system("rm *.sca");
 
 number_of_nodes = 16 ;
-rnd = rand(1,number_of_nodes) ;
+rnd = [0.443974   0.796548   0.438464   0.137988   0.737738   0.189013   0.252846   0.098827   0.338687   0.460423   0.398489   0.955685   0.198213   0.439249   0.748940   0.517934] ;
 hold on ;
 
-for fasika = 1:2
-
+for fasika = 1:4
 keep('fasika','number_of_nodes','rnd');
-algorithm = fasika  ;
+algorithm = fasika ;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%          INPUT PARAMETERS FOR THE SIMULATION                         %%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+run = 1 ;                           %% 1 - commandline  2 - gui 
+jump = 1 ;                          %% jump to reduce the calculation burden 
+sim_time_limit = 1000;		    %% Number of events needed for "limit" 
+speed = 0 ;                         %%  In Kilometer per hour 
+updateInterval = 1;              %% In simulation seconds 
+gain = 0.75 ;                       %% Value for computing the offsets 
+express = "yes" ;                   %% Enable or Disable express mode 
+alpha = 2.50 ;                      %% Channel factor - attenuation if you might say ...
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%          END OF PARAMETERS , OUT                                     %%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 if (fasika == 1)
 color = 'b' ;
@@ -25,24 +40,8 @@ elseif(fasika == 6)
 color = 'w';
 endif
 
-prefix = "/home/fasika/mixim/trunk/examples/Output/"; % output directory
-model = "./New"; % simulation command
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%          INPUT PARAMETERS FOR THE SIMULATION                         %%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-run = 1 ;                           %% 1 - commandline  2 - gui 
-jump = 1 ;                          %% jump to reduce the calculation burden 
-sim_time_limit = 1000;		    %% Number of events needed for "limit" 
-speed = 10 ;                         %%  In Kilometer per hour 
-updateInterval = 1;              %% In simulation seconds 
-gain = 0.75 ;                       %% Value for computing the offsets 
-express = "yes" ;                   %% Enable or Disable express mode 
-alpha = 2.50 ;                      %% Channel factor - attenuation if you might say ...
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%          END OF PARAMETERS , OUT                                     %%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+prefix = "/home/fasika/mixim/trunk/examples/Output/";		 % output directory
+model = "./New";		  % simulation command
 %% create ini file
 
 if(run==1)
@@ -62,7 +61,7 @@ no = int2str(number_of_nodes);
 ra = int2str(rand()*100 );
 alp = int2str(alpha*100);
 ext = '.eps';
-filename = strcat(prefix,'s',spe,'-g',gai,'-n',no,'-alpha',alp,ext);
+filename = strcat(prefix,'s',ra,spe,'-g',gai,'-n',no,'-alpha',alp,ext);
 
 playgroundSizeX = (sqrt(number_of_nodes) + 2) * 150 ; %% meters
 playgroundSizeY = (sqrt(number_of_nodes) + 2) * 150 ; %% meters
@@ -278,12 +277,13 @@ endfor
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 m = length(MainVector);
-MainVector(:,sim_time_limit:m) = 0 ;
+MainVector(:,sim_time_limit:m) = MainVector(1,sim_time_limit-1) ;
 
-plot(std(MainVector/30),color);
+plot(std(MainVector),color);
+%legend(int2str(jump*10));
 endfor
 xlabel('period(sec)');
-ylabel('synchronization error(clock cycles)');
+ylabel('Synchronization error(microseconds)');
 legend("Weighted measurment","Median","kalman filter","Curve fitting","Minimum Mean Square Estimator");
 print(filename);
 hold on ;
