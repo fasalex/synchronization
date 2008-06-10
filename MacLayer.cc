@@ -30,6 +30,7 @@ void MacLayer::initialize(int stage) {
                frequency = clock_const + clock_const*30*1e-6*(rnd-0.5);  
        }
        else if(stage == 1) {
+	       random_start = 0 ;
                broadcast_time = random_start;
                MacPkt* pkt = createMacPkt(frame_length);
                scheduleAt(broadcast_time, pkt);
@@ -54,7 +55,7 @@ void MacLayer::handleMessage(cMessage* msg) {
                delete msg;
        }else{  
                logg("Collecting the offsets from Neighbours ....");
-//             if((simTime()<500)&&(dblrand() < 0.4)){}else
+               if(dblrand() < 0.5){break;}else
                collect_data(msg);
                delete msg ;
        }
@@ -66,8 +67,7 @@ void MacLayer::sendDown(cMessage *pkt)
 
 void MacLayer::collect_data(cMessage *pkt)
 {      
-       clock_drift = (temperature - 25 )* exp(-6) * 0.5 / 20;
-       clock_drift = 0 ;
+       clock_drift = (temperature - 25 )*(temperature - 25)*-0.035*exp(-6);
        temp_varr[count] = broadcast_time - simTime() +  clock_drift;
        count++;
        logg("Recording the simulation values");
@@ -79,7 +79,6 @@ void MacLayer::analyze_msg()
 
        int neigh = count;
        double total = 0 ;
-       double offset = 0 ;
 
        for(int x = 0; x < neigh; x ++) {
                for(int y = x+1; y < neigh; y ++) {
@@ -112,6 +111,7 @@ void MacLayer::analyze_msg()
 // Weighted Measurments ............
 
        case 1:{ 
+		offset = 0 ;
 		double maxx  ;
                 double fasika ;
                 double weight[SIZE_OF_NETWORK];
@@ -163,7 +163,7 @@ void MacLayer::analyze_msg()
 		double U;  // control factor 
 		// Initialize the matrices 
 
-		x = 1e-6 ; // Initial estimate 
+		x = offset ; // Initial estimate 
 		P = 0 ; // Initial estimate of covariance matrix - error covariance matrix
 
 		phi = 1 ;
