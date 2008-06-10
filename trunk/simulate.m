@@ -278,8 +278,16 @@ endfor
 
 m = length(MainVector);
 MainVector(:,sim_time_limit:m) = MainVector(1,sim_time_limit-1) ;
-
+temp = max(MainVector) - min(MainVector) ;
+mea = mean(MainVector) ;
+figure(1);
+hold on ;
+plot(temp,color) ;
+hold off;
+figure(2);
+hold on;
 plot(std(MainVector),color);
+hold off;
 %legend(int2str(jump*10));
 endfor
 xlabel('period(sec)');
