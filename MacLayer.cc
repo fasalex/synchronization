@@ -30,7 +30,6 @@ void MacLayer::initialize(int stage) {
                frequency = clock_const + clock_const*30*1e-6*(rnd-0.5);  
        }
        else if(stage == 1) {
-	       random_start = 0 ;
                broadcast_time = random_start;
                MacPkt* pkt = createMacPkt(frame_length);
                scheduleAt(broadcast_time, pkt);
@@ -55,7 +54,7 @@ void MacLayer::handleMessage(cMessage* msg) {
                delete msg;
        }else{  
                logg("Collecting the offsets from Neighbours ....");
-               if(dblrand() < 0.5){break;}else
+//               if(dblrand() > 0.2)
                collect_data(msg);
                delete msg ;
        }
@@ -79,8 +78,9 @@ void MacLayer::analyze_msg()
 
        int neigh = count;
        double total = 0 ;
-
-       for(int x = 0; x < neigh; x ++) {
+/*	for (int h =0;h<neigh;h++)
+		output_vec.record(temp_varr[h]);*/
+       for(int x = 0; x < neigh; x ++) {		
                for(int y = x+1; y < neigh; y ++) {
                                if(temp_varr[y] < temp_varr[x]) {
                                        double temp = temp_varr[x];
@@ -91,21 +91,21 @@ void MacLayer::analyze_msg()
                total = total + temp_varr[x] ;
        }
        
-       int medium_value = (int) neigh / 2 ;
-       double median;
+       double median = 0;
        double add_on ;
        add_on = temp_varr[0] ;
 
        for(int k=0;k<neigh;k++)
 	 temp_varr[k] = temp_varr[k] - add_on ;
-
-       if(neigh ==0)
+       if(neigh == 0)
                median = 0 ;
        else if ( neigh == 1)
-               median = temp_varr[neigh] ;
-       else
-               median = 0.5 *(temp_varr[medium_value - 1] + temp_varr[medium_value]) ;
-
+               median = temp_varr[0] ;
+       else if( neigh%2 == 0)
+               median = 0.5 *(temp_varr[neigh/2 -1] + temp_varr[neigh/2]) ; 
+       else if( neigh%2 == 1)
+	       median = temp_varr[(neigh+1)/2 -1 ] ;
+	
        switch(algorithm){
 
 // Weighted Measurments ............
@@ -153,24 +153,21 @@ void MacLayer::analyze_msg()
 
                	double x; // estimated value of the variable to be considered 
 		double phi; // coefficient to bla bla the previous estimate in it
-		double z;   // measured value
 		double H;  // adjustment matrix
 		double R;  // noise covariance
 		double P;  // error covariance 
 		double Ka;  // Kalman gain 
 		double Q;  // noise covariance  
-		double B;  // control coefficient 
-		double U;  // control factor 
+
 		// Initialize the matrices 
 
-		x = offset ; // Initial estimate 
-		P = 0 ; // Initial estimate of covariance matrix - error covariance matrix
+		x = 0 ; // Initial estimate 
+		P = 1 ; // Initial estimate of covariance matrix - error covariance matrix
 
 		phi = 1 ;
-		Q = 1 ;
-		R = 1 ;
+		Q = 1e-6;
+		R = Q ;
 		H = 1 ;
-		B = 0 ;
 
 		// Loop 
 
@@ -178,14 +175,14 @@ void MacLayer::analyze_msg()
 			
 			// Time update "PREDICT"
 
-			x = phi*x + B*U ;
-			P = (phi * P) * (1/phi) + Q ;
+			x = phi*x ;  
+			P =  phi*P*phi + Q ;
 
 			// Measurment Update "CORRECT"
 
 			// Compute Kalman gain
 
-			Ka = P * H ; // ( ( H * P * H ) + R);	
+			Ka = P * H /(( H * P * H ) + R);	
 
 			// update estimate with measurement
 
@@ -231,24 +228,43 @@ void MacLayer::analyze_msg()
 
 // MMSE estimator ....
 
-		double x;    // estimated value of the variable to be considered 
-		double W;    // weight matrix
-		double H;    // coefficient matrix  
+		double x; // estimated value of the variable to be considered 
+		double phi; // coefficient to bla bla the previous estimate in it
+		double H;  // adjustment matrix
+		double R;  // noise covariance
+		double P;  // error covariance 
+		double Ka;  // Kalman gain 
+		double Q;  // noise covariance  
 
-		x = 1e-6 ;   // Initial estimate 
-		W = 1 ;      // Initialization of the weight matrix
+		// Initialize the matrices 
+
+		x = 0 ; // Initial estimate 
+		P = 1 ; // Initial estimate of covariance matrix - error covariance matrix
+
+		phi = 1 ;
+		Q = 1e-6;
+		R = Q ;
 		H = 1 ;
-		
-  		// Loop 
 
 		for(int i=0;i<neigh;i++){
-			x = (H*W*temp_varr[i])/(H*W*H) ;
-			W = W * 1 ;
-			H = H * 1 ;
-		}
-		offset = x ;
-		offset += add_on ;
-	        break;
+			
+		        // Measurment Update "CORRECT"
+
+			// Compute Kalman gain
+
+			Ka = P * H /(( H * P * H ) + R);	
+
+			// update estimate with measurement
+
+			x = x + Ka * (temp_varr[i] - (H * x) );
+
+			// update the error covariance
+
+			P = ( 1 - (Ka * H)) * P;	
+			}
+			offset = x ;
+          		offset += add_on ;
+               break;
 	}
        default:
                offset = 0;
@@ -261,8 +277,9 @@ void MacLayer::analyze_msg()
 
        if (ev.isGUI())
     		bubble("Going down!");
-       cDisplayString *dispStr = displayString();
+       cDisplayString *dispStr = isplayString();
        displayString -> */
+
        broadcast_time = broadcast_time - gain*offset + frequency ;
        Ref = Ref - gain*offset + frequency ;
 
