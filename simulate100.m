@@ -1,3 +1,7 @@
+
+% for master=1:10
+% keep("master");
+
 clf ;
 system("rm *.vec");
 system("rm *.sca");
@@ -6,9 +10,9 @@ number_of_nodes = 100 ;
 rnd = [ 0.8143029   0.1436809   0.3708347   0.3751496   0.9997108   0.2128853   0.2519268   0.9645563   0.7833585   0.6117664   0.2488287   0.7356938   0.9992336 0.9947599   0.4696405   0.6541043   0.8898897   0.2130503   0.9190389   0.4829364   0.9184579   0.8490024   0.3047150   0.1094834   0.8235706   0.1189216 0.7378912   0.8568373   0.3897217   0.2688272   0.6572797   0.6881676   0.3183481   0.0048737   0.1204599   0.9669948   0.5117774   0.4241742   0.2122554 0.5350033   0.5500493   0.0556049   0.7438356   0.1723119   0.6855482   0.1854460   0.0407906   0.2015634   0.5702908   0.0701168   0.3850803   0.1734662 0.0076402   0.1214227   0.7501434   0.2834053   0.8838660   0.3743215   0.1851521   0.7505261   0.7204267   0.3326949   0.9364861   0.8168793   0.1224146 0.8613567   0.6900291   0.3413432   0.9305705   0.7447966   0.2897837   0.9311427   0.1047797   0.4313064   0.3121755   0.3825634   0.5265033   0.0415815 0.2966999   0.2156913   0.3764479   0.5211732   0.8367369   0.0229211   0.9339046   0.1499722   0.8459940   0.1217056   0.4445572   0.8465233   0.8582198 0.7865434   0.7004069   0.7445873   0.3609242   0.3545262   0.0267232   0.8984687   0.6323993   0.1587987] ;
 hold on ;
 
-for fasika = 1:2
+for fasika = 1:1
 keep('fasika','number_of_nodes','rnd');
-algorithm = fasika + 1 ;
+algorithm = 3  ;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          INPUT PARAMETERS FOR THE SIMULATION                         %%%%%%%%%%%%%%
@@ -18,7 +22,7 @@ jump = 1 ;                          %% jump to reduce the calculation burden
 sim_time_limit = 1000;		    %% Number of events needed for "limit" 
 speed = 0 ;                         %%  In Kilometer per hour 
 updateInterval = 1;                 %% In simulation seconds 
-gain = 0.75 ;                       %% Value for computing the offsets 
+gain = 0.85 ;                       %% Value for computing the offsets 
 express = "yes" ;                   %% Enable or Disable express mode 
 alpha = 2.50 ;                      %% Channel factor - attenuation if you might say ...
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39,7 +43,7 @@ elseif(fasika == 6)
 color = 'w';
 endif
 
-prefix = "/home/fasika/mixim/trunk/examples/Output/";		 % output directory
+prefix = "/home/fasika/mixim/trunk/examples/synchronization/graphs/";		 % output directory
 model = "./New";		  % simulation command
 %% create ini file
 
@@ -57,7 +61,7 @@ ininame = "omnetpp.ini";
 spe = int2str(speed);
 gai = int2str(gain*10);
 no = int2str(number_of_nodes);
-ra = int2str(rand()*100 );
+ra = int2str(rand()*1000 );
 alp = int2str(alpha*100);
 ext = '.eps';
 filename = strcat(prefix,'s',ra,spe,'-g',gai,'-n',no,'-alpha',alp,ext);
@@ -291,3 +295,5 @@ legend("Weighted measurment","Median","kalman filter","Curve fitting","Minimum M
 print(filename);
 hold on ;
 disp("SIMULATION ENDED") ;
+
+% save -binary data a b*

@@ -1,21 +1,26 @@
+
+for master=1:10
+keep("master");
 clf ;
 system("rm *.vec");
 system("rm *.sca");
 
 number_of_nodes = 16 ;
 rnd = [0.443974   0.796548   0.438464   0.137988   0.737738   0.189013   0.252846   0.098827   0.338687   0.460423   0.398489   0.955685   0.198213   0.439249   0.748940   0.517934] ;
-hold on ;
+rnd =[0.298047   0.090764   0.942143   0.335978   0.494486   0.555454   0.062985   0.632019   0.733903   0.908358   0.875827   0.313653   0.371660   0.919895 0.820294   0.312042] ;
 
+hold on ;
+rnd = rand(1,16) ;
 for fasika = 1:4
 keep('fasika','number_of_nodes','rnd');
-algorithm = fasika  ;
+algorithm = 1   ;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          INPUT PARAMETERS FOR THE SIMULATION                         %%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 run = 1 ;                           %% 1 - commandline  2 - gui 
 jump = 1 ;                          %% jump to reduce the calculation burden 
-sim_time_limit = 300;		    %% Number of events needed for "limit" 
+sim_time_limit = 1000;		    %% Number of events needed for "limit" 
 speed = 0 ;                         %%  In Kilometer per hour 
 updateInterval = 1;              %% In simulation seconds 
 gain = 0.75 ;                       %% Value for computing the offsets 
@@ -24,7 +29,7 @@ alpha = 2.5 ;                      %% Channel factor - attenuation if you might 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          END OF PARAMETERS , OUT                                     %%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+jump = fasika ;
 if (fasika == 1)
 color = 'b' ;
 elseif(fasika == 2 )
@@ -39,7 +44,7 @@ elseif(fasika == 6)
 color = 'w';
 endif
 
-prefix = "/home/fasika/mixim/trunk/examples/Output/";		 % output directory
+prefix = "/home/fasika/mixim/trunk/examples/synchronization/graphs/";	% output directory
 model = "./New";		  % simulation command
 %% create ini file
 
@@ -57,7 +62,7 @@ ininame = "omnetpp.ini";
 spe = int2str(speed);
 gai = int2str(gain*10);
 no = int2str(number_of_nodes);
-ra = int2str(rand()*100 );
+ra = int2str(rand()*1000 );
 alp = int2str(alpha*100);
 ext = '.eps';
 filename = strcat(prefix,'s',ra,spe,'-g',gai,'-n',no,'-alpha',alp,ext);
@@ -278,14 +283,13 @@ endfor
 m = length(MainVector);
 MainVector(:,sim_time_limit:m) = MainVector(1,sim_time_limit-1) ;
 temp = max(MainVector) - min(MainVector) ;
-mea = mean(MainVector) ;
-plot(std(MainVector),color);
-%hold off;
-%legend(int2str(jump*10));
+%plot(std(MainVector),color);
+plot(temp,color);
 endfor
 xlabel('period(sec)');
 ylabel('Synchronization error(microseconds)');
-legend("Weighted measurment","Median","kalman filter","Curve fitting","Minimum Mean Square Estimator");
+legend("kalman filter","Median","Weighted measurment","Curve fitting","Minimum Mean Square Estimator");
 print(filename);
 hold on ;
 disp("SIMULATION ENDED") ;
+endfor 

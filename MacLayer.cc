@@ -27,9 +27,10 @@ void MacLayer::initialize(int stage) {
                controlOut = findGate("lowerControlOut");
                controlIn = findGate("lowerControlIn");
                random_start = rnd * 29/32768 ;
-               frequency = clock_const + clock_const*30*1e-6*(rnd-0.5);  
+               frequency = clock_const + clock_const*30*1e-6*(rnd-0.5)*2;  
        }
        else if(stage == 1) {
+		random_start = 0  ;
                broadcast_time = random_start;
                MacPkt* pkt = createMacPkt(frame_length);
                scheduleAt(broadcast_time, pkt);
@@ -78,8 +79,8 @@ void MacLayer::analyze_msg()
 
        int neigh = count;
        double total = 0 ;
-/*	for (int h =0;h<neigh;h++)
-		output_vec.record(temp_varr[h]);*/
+//	for (int h =0;h<neigh;h++)
+//		output_vec.record(temp_varr[h]);
        for(int x = 0; x < neigh; x ++) {		
                for(int y = x+1; y < neigh; y ++) {
                                if(temp_varr[y] < temp_varr[x]) {
@@ -108,9 +109,78 @@ void MacLayer::analyze_msg()
 	
        switch(algorithm){
 
+
+       case 1:{
+
+// Kalman filter .....
+
+               	double x; // estimated value of the variable to be considered 
+		double phi; // coefficient to bla bla the previous estimate in it
+		double H;  // adjustment matrix
+		double R;  // noise covariance
+		double P;  // error covariance 
+		double Ka;  // Kalman gain 
+		double Q;  // noise covariance  
+
+		// Initialize the matrices 
+
+		x = offset ; // Initial estimate 
+		P = 1 ; // Initial estimate of covariance matrix - error covariance matrix
+
+		phi = 1 ;
+		if(jump ==1){
+			Q=1e-6;
+			R=1;
+		}else if(jump == 2){
+			Q=1;
+			R=1;
+		}else if(jump == 3){
+			Q=1e-6;
+			R=1e-6;		
+		}else if(jump ==4){
+			Q=1;
+			R=1e-6;
+ 		}
+		H = 1 ;
+
+		// Loop 
+
+		for(int i=0;i<neigh;i++){
+			
+			// Time update "PREDICT"
+
+			x = phi*x ;  
+			P =  phi*P*phi + Q ;
+
+			// Measurment Update "CORRECT"
+
+			// Compute Kalman gain
+
+			Ka = P * H /(( H * P * H ) + R);	
+
+			// update estimate with measurement
+
+			x = x + Ka * (temp_varr[i] - (H * x) );
+
+			// update the error covariance
+
+			P = ( 1 - (Ka * H)) * P;	
+			}
+			offset = x ;
+          		offset += add_on ;
+               break;}
+
+      case 2:{
+// Median .........
+
+               offset = median ;
+               offset += add_on ;
+               break;}
+
+
 // Weighted Measurments ............
 
-       case 1:{ 
+       case 3:{ 
 		offset = 0 ;
 		double maxx  ;
                 double fasika ;
@@ -140,61 +210,7 @@ void MacLayer::analyze_msg()
                 }}
 		offset += add_on ;
                 break;}
-       case 2:{
-
-// Median .........with a gain 
-               offset = median ;
-               offset += add_on ;
-               break;}
-
-       case 3:{
-
-// Kalman filter .....
-
-               	double x; // estimated value of the variable to be considered 
-		double phi; // coefficient to bla bla the previous estimate in it
-		double H;  // adjustment matrix
-		double R;  // noise covariance
-		double P;  // error covariance 
-		double Ka;  // Kalman gain 
-		double Q;  // noise covariance  
-
-		// Initialize the matrices 
-
-		x = 0 ; // Initial estimate 
-		P = 1 ; // Initial estimate of covariance matrix - error covariance matrix
-
-		phi = 1 ;
-		Q = 1e-6;
-		R = Q ;
-		H = 1 ;
-
-		// Loop 
-
-		for(int i=0;i<neigh;i++){
-			
-			// Time update "PREDICT"
-
-			x = phi*x ;  
-			P =  phi*P*phi + Q ;
-
-			// Measurment Update "CORRECT"
-
-			// Compute Kalman gain
-
-			Ka = P * H /(( H * P * H ) + R);	
-
-			// update estimate with measurement
-
-			x = x + Ka * (temp_varr[i] - (H * x) );
-
-			// update the error covariance
-
-			P = ( 1 - (Ka * H)) * P;	
-			}
-			offset = x ;
-          		offset += add_on ;
-               break;}
+        
        case 4:{
 
 // Curve fitting - logarithmic 
@@ -279,7 +295,7 @@ void MacLayer::analyze_msg()
     		bubble("Going down!");
        cDisplayString *dispStr = isplayString();
        displayString -> */
-
+//	output_vec.record(offset) ;
        broadcast_time = broadcast_time - gain*offset + frequency ;
        Ref = Ref - gain*offset + frequency ;
 
