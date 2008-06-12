@@ -1,7 +1,7 @@
-system "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/fasika/omnet/lib:/home/fasika/mixim/trunk/lib" ;
 
-for master=1:1
-keep("master");
+iter = 5 ;
+for master=1:iter 
+keep('master','finalvec','iter');
 clf ;
 system("rm *.vec");
 system("rm *.sca");
@@ -13,7 +13,7 @@ hold on ;
 rnd = rand(1,number_of_nodes);
 
 for fasika = 1:4
-keep('fasika','number_of_nodes','rnd');
+keep('fasika','number_of_nodes','rnd','master','finalvec','iter');
 algorithm = fasika ;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -296,4 +296,28 @@ print(filename);
 hold on ;
 disp("SIMULATION ENDED") ;
 endfor
-% save -binary data a b*
+
+kalman = zeors(1,iter);
+medina = zeros(1,iter);
+weight = zeros(1,iter);
+curvefit = zeros(1,iter);
+
+for(k=1:iter)
+    kalman = kalman + finalvec((k-1)*4 + 1 ,:) ;
+    median = median + finalvec((k-1)*4 + 2 ,:) ;
+    weight = weight + finalvec((k-1)*4 + 3 ,:) ;
+    curvefit = curvefit + finalvec((k-1)*4 + 4 ,:) ;
+endfor
+ 
+kalman = kalman / iter;
+median = median / iter ;
+weight = weight / iter ;
+curvefit = curvefit / iter ;
+
+figure ;
+hold on ;
+plot(kalman, 'b');
+plot(median, 'r');
+plot(weight, 'c');
+plot(curvefit, 'm');
+
