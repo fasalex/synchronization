@@ -1,5 +1,7 @@
 
-for master=1:10
+system "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/fasika/omnet/lib:/home/fasika/mixim/trunk/lib" ;
+
+for master=1:5
 keep("master");
 clf ;
 system("rm *.vec");
@@ -8,12 +10,11 @@ system("rm *.sca");
 number_of_nodes = 16 ;
 rnd = [0.443974   0.796548   0.438464   0.137988   0.737738   0.189013   0.252846   0.098827   0.338687   0.460423   0.398489   0.955685   0.198213   0.439249   0.748940   0.517934] ;
 rnd =[0.298047   0.090764   0.942143   0.335978   0.494486   0.555454   0.062985   0.632019   0.733903   0.908358   0.875827   0.313653   0.371660   0.919895 0.820294   0.312042] ;
-
+rnd = rand(1,number_of_nodes);
 hold on ;
-rnd = rand(1,16) ;
 for fasika = 1:4
 keep('fasika','number_of_nodes','rnd');
-algorithm = 1   ;
+algorithm = fasika  ;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          INPUT PARAMETERS FOR THE SIMULATION                         %%%%%%%%%%%%%%
@@ -22,14 +23,14 @@ run = 1 ;                           %% 1 - commandline  2 - gui
 jump = 1 ;                          %% jump to reduce the calculation burden 
 sim_time_limit = 1000;		    %% Number of events needed for "limit" 
 speed = 0 ;                         %%  In Kilometer per hour 
-updateInterval = 1;              %% In simulation seconds 
+updateInterval = 1;                 %% In simulation seconds 
 gain = 0.75 ;                       %% Value for computing the offsets 
 express = "yes" ;                   %% Enable or Disable express mode 
-alpha = 2.5 ;                      %% Channel factor - attenuation if you might say ...
+alpha = 2.5 ;                       %% Channel factor - attenuation if you might say ...
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          END OF PARAMETERS , OUT                                     %%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-jump = fasika ;
+
 if (fasika == 1)
 color = 'b' ;
 elseif(fasika == 2 )
@@ -46,6 +47,7 @@ endif
 
 prefix = "/home/fasika/mixim/trunk/examples/synchronization/graphs/";	% output directory
 model = "./New";		  % simulation command
+
 %% create ini file
 
 if(run==1)
@@ -283,8 +285,8 @@ endfor
 m = length(MainVector);
 MainVector(:,sim_time_limit:m) = MainVector(1,sim_time_limit-1) ;
 temp = max(MainVector) - min(MainVector) ;
-%plot(std(MainVector),color);
-plot(temp,color);
+plot(std(MainVector),color);
+%plot(temp,color);
 endfor
 xlabel('period(sec)');
 ylabel('Synchronization error(microseconds)');
