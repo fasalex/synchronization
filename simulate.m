@@ -1,6 +1,6 @@
 
-system "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/fasika/omnet/lib:/home/fasika/mixim/trunk/lib" ;
 iter = 5 ;
+finalvec = zeros(iter,1000);
 for master=1:iter 
 keep('master','finalvec','iter');
 clf ;
@@ -12,7 +12,7 @@ rnd = [0.443974   0.796548   0.438464   0.137988   0.737738   0.189013   0.25284
 rnd =[0.298047   0.090764   0.942143   0.335978   0.494486   0.555454   0.062985   0.632019   0.733903   0.908358   0.875827   0.313653   0.371660   0.919895 0.820294   0.312042] ;
 rnd = rand(1,number_of_nodes);
 hold on ;
-for fasika = 1:4
+for fasika = 1:3
 keep('fasika','number_of_nodes','rnd','master','finalvec','iter');
 algorithm = fasika  ;
 
@@ -283,42 +283,42 @@ endfor
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 m = length(MainVector);
-MainVector(:,sim_time_limit:m) = MainVector(1,sim_time_limit-1) ;
-temp = max(MainVector) - min(MainVector) ;
-plot(std(MainVector),color);
-finalvec((master-1)*4 + fasika,:) = std(MainVector) ;
-%plot(temp,color);
+%MainVector(:,sim_time_limit:m) = MainVector(1,sim_time_limit-1) ;
+%temp = max(MainVector) - min(MainVector) ;
+%plot(std(MainVector),color);
+%MainVector = MainVector(:,1:1000);
+finalvec((master-1)*4 + fasika,:) = std(MainVector(:,1:1000)) ;
 endfor
-xlabel('period(sec)');
-ylabel('Synchronization error(microseconds)');
-legend("kalman filter","Median","Weighted measurment","Curve fitting","Minimum Mean Square Estimator");
-print(filename);
-hold on ;
+%xlabel('period(sec)');
+%ylabel('Synchronization error(microseconds)');
+%legend("kalman filter","med","Weighted measurment","Curve fitting","Minimum Mean Square Estimator");
+%print(filename);
+%hold on ;
 disp("SIMULATION ENDED") ;
 endfor 
 
-kalman = zeors(1,iter);
-medina = zeros(1,iter);
-weight = zeros(1,iter);
-curvefit = zeros(1,iter);
+kalman = zeros(1,1000);
+medina = zeros(1,1000);
+weight = zeros(1,1000);
+curvefit = zeros(1,1000);
 
 for(k=1:iter)
     kalman = kalman + finalvec((k-1)*4 + 1 ,:) ;
-    median = median + finalvec((k-1)*4 + 2 ,:) ;
+    med = med + finalvec((k-1)*4 + 2 ,:) ;
     weight = weight + finalvec((k-1)*4 + 3 ,:) ;
     curvefit = curvefit + finalvec((k-1)*4 + 4 ,:) ;
 endfor
 
  
 kalman = kalman / iter;
-median = median / iter ;
+med = med / iter ;
 weight = weight / iter ;
 curvefit = curvefit / iter ;
 
 figure ;
 hold on ;
 plot(kalman, 'b');
-plot(median, 'r');
+plot(med, 'r');
 plot(weight, 'c');
 plot(curvefit, 'm');
 

@@ -1,6 +1,7 @@
 
 iter = 5 ;
 for master=1:iter 
+finalvec = zeros(iter,1000);
 keep('master','finalvec','iter');
 clf ;
 system("rm *.vec");
@@ -297,10 +298,10 @@ hold on ;
 disp("SIMULATION ENDED") ;
 endfor
 
-kalman = zeors(1,iter);
-medina = zeros(1,iter);
-weight = zeros(1,iter);
-curvefit = zeros(1,iter);
+kalman = zeors(1,1000);
+medina = zeros(1,1000);
+weight = zeros(1,1000);
+curvefit = zeros(1,1000);
 
 for(k=1:iter)
     kalman = kalman + finalvec((k-1)*4 + 1 ,:) ;
