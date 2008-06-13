@@ -1,9 +1,11 @@
-
-iter = 5 ;
+%%%% The begining of the end !!!!!!!!!!
+iter = 2;
 finalvec = zeros(iter,1000);
+figure ;
 for master=1:iter 
 keep('master','finalvec','iter');
 clf ;
+
 system("rm *.vec");
 system("rm *.sca");
 
@@ -12,7 +14,7 @@ rnd = [0.443974   0.796548   0.438464   0.137988   0.737738   0.189013   0.25284
 rnd =[0.298047   0.090764   0.942143   0.335978   0.494486   0.555454   0.062985   0.632019   0.733903   0.908358   0.875827   0.313653   0.371660   0.919895 0.820294   0.312042] ;
 rnd = rand(1,number_of_nodes);
 hold on ;
-for fasika = 1:3
+for fasika = 1:4
 keep('fasika','number_of_nodes','rnd','master','finalvec','iter');
 algorithm = fasika  ;
 
@@ -298,7 +300,7 @@ disp("SIMULATION ENDED") ;
 endfor 
 
 kalman = zeros(1,1000);
-medina = zeros(1,1000);
+med = zeros(1,1000);
 weight = zeros(1,1000);
 curvefit = zeros(1,1000);
 
@@ -315,13 +317,9 @@ med = med / iter ;
 weight = weight / iter ;
 curvefit = curvefit / iter ;
 
-figure ;
 hold on ;
 plot(kalman, 'b');
 plot(med, 'r');
 plot(weight, 'c');
-plot(curvefit, 'm');
-
-    
-      
+plot(curvefit, 'm');   
     
