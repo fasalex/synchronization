@@ -55,7 +55,7 @@ void MacLayer::handleMessage(cMessage* msg) {
                delete msg;
        }else{  
                logg("Collecting the offsets from Neighbours ....");
-               //if(dblrand() > 0.3)
+               if(dblrand() > 0.05)
                collect_data(msg);
                delete msg ;
        }
