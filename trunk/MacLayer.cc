@@ -55,7 +55,7 @@ void MacLayer::handleMessage(cMessage* msg) {
                delete msg;
        }else{  
                logg("Collecting the offsets from Neighbours ....");
-//               if(dblrand() > 0.01)
+               //if(dblrand() > 0.3)
                collect_data(msg);
                delete msg ;
        }
@@ -76,11 +76,10 @@ void MacLayer::collect_data(cMessage *pkt)
 void MacLayer::analyze_msg()
 {      
        logg("Adjusting the offset of ") ;
-
+       offset = 0 ;
        int neigh = count;
        double total = 0 ;
-  //     for (int h =0;h<neigh;h++)
-//	    output_vec.record(temp_varr[h]);
+
        for(int x = 0; x < neigh; x ++) {		
                for(int y = x+1; y < neigh; y ++) {
                                if(temp_varr[y] < temp_varr[x]) {
@@ -182,10 +181,10 @@ void MacLayer::analyze_msg()
                         sum = sum + tempp[af] ;
                 }
                
-                fasika =  sum * (neigh-jump) ;
+                fasika =  sum * (neigh-0.9) ;
                 for (int m=0; m < neigh; m++){
 			if(fasika !=0)
-                         weight[m] = (sum - jump * tempp[m]) / fasika ;
+                         weight[m] = (sum - 0.9 * tempp[m]) / fasika ;
 			else 
 			 weight[m] = 0 ;
 
@@ -195,7 +194,7 @@ void MacLayer::analyze_msg()
 		offset += add_on ;
                 break;}
         
-       case 4:{
+       case 5:{
 
 // Curve fitting - logarithmic 
 
@@ -222,11 +221,11 @@ void MacLayer::analyze_msg()
                a = (sumy - b*sum) / count ;
                offset = a + b*log((double)count/2) ;
 	       offset = offset - cmp ;
-               offset = offset * gain;	
+	       offset *= gain ;
                offset += add_on ;
 	       break;
        }
-       case 5:{
+       case 4:{
 
 // MMSE estimator ....
 
@@ -312,7 +311,7 @@ void MacLayer::analyze_msg()
                offset = 0;
                break;
        }
-	
+
        broadcast_time = broadcast_time - offset + frequency ;
        Ref = Ref - offset + frequency ;
 
