@@ -3,14 +3,14 @@ clf ;
 system("rm *.vec");
 system("rm *.sca");
 
-number_of_nodes = 16 ;
+number_of_nodes = 20 ;
 rnd = [0.443974   0.796548   0.438464   0.137988   0.737738   0.189013   0.252846   0.098827   0.338687   0.460423   0.398489   0.955685   0.198213   0.439249   0.748940   0.517934] ;
 rnd =[0.298047   0.090764   0.942143   0.335978   0.494486   0.555454   0.062985   0.632019   0.733903   0.908358   0.875827   0.313653   0.371660   0.919895 0.820294   0.312042] ;
 rnd = rand(1,number_of_nodes);
 hold on ;
-for fasika = 1:1
+for fasika = 1:4
 keep('fasika','number_of_nodes','rnd');
-algorithm = 3  ;
+algorithm = fasika  ;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          INPUT PARAMETERS FOR THE SIMULATION                         %%%%%%%%%%%%%%
@@ -18,7 +18,7 @@ algorithm = 3  ;
 run = 1 ;                           %% 1 - commandline  2 - gui 
 jump = 1 ;                          %% jump to reduce the calculation burden 
 sim_time_limit = 1000;		    %% Number of events needed for "limit" 
-speed = 3.6 ;                         %%  In Kilometer per hour 
+speed = 7 ;                         %%  In Kilometer per hour 
 updateInterval = 1;                 %% In simulation seconds 
 gain = 0.75 ;                       %% Value for computing the offsets 
 express = "yes" ;                   %% Enable or Disable express mode 
@@ -65,8 +65,8 @@ alp = int2str(alpha*100);
 ext = '.eps';
 filename = strcat(prefix,'s',ra,spe,'-g',gai,'-n',no,'-alpha',alp,ext);
 
-playgroundSizeX = 150 ; %% meters
-playgroundSizeY = 150 ; %% meters
+playgroundSizeX =  (sqrt(number_of_nodes) + 1)*100 ;	    %% meters
+playgroundSizeY =  playgroundSizeX ;            %% meters
 
 fidout = fopen(ininame, "w", "native");
 fprintf(fidout, "[General]\n");
@@ -139,13 +139,12 @@ i=0;
 j=0;
 squ = sqrt(number_of_nodes) ;
 squ = int8(squ) ;
-sep = (100-2)/squ;
 
 for(m=0:squ)
 while((j<squ) && ( i < number_of_nodes))
-x(i+1) = 1 + j*sep ;
+x(i+1) = 100 + j*100 ;
 fprintf(fidout, "mobileNet.Node[%d].mobility.x = %f\n",i,x(i+1));
-y(i+1) = 1 + m*sep ;
+y(i+1) = 100 + m*100 ;
 fprintf(fidout, "mobileNet.Node[%d].mobility.y = %f\n",i,y(i+1));
 z(i+1) = i ;
 fprintf(fidout, "mobileNet.Node[%d].mobility.z = 0\n",z(i+1));
@@ -283,12 +282,12 @@ endfor
 m = length(MainVector);
 MainVector(:,sim_time_limit:m) = MainVector(1,sim_time_limit-1) ;
 %temp = max(MainVector) - min(MainVector) ;
-plot(std(MainVector),color);
+plot(std(MainVector/30),color);
 MainVector = MainVector(:,1:1000);
 endfor
 xlabel('period(sec)');
-ylabel('Synchronization error(microseconds)');
-legend("kalman filter","med","Weighted measurment","Curve fitting","Minimum Mean Square Estimator");
+ylabel('Synchronization error(clock cycles)');
+legend("kalman filter","Median","Weighted measurement","Curve fitting");%,"Minimum Mean Square Estimator");
 print(filename);
 hold on ;
 disp("SIMULATION ENDED") ;

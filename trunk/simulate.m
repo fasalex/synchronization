@@ -1,5 +1,5 @@
 %%%% The begining of the end !!!!!!!!!!
-iter = 20;
+iter = 10;
 finalvec = zeros(iter,1000);
 figure ;
 for master=1:iter 
@@ -9,7 +9,7 @@ clf ;
 system("rm *.vec");
 system("rm *.sca");
 
-number_of_nodes = 20 ;
+number_of_nodes = 100 ;
 rnd = [0.443974   0.796548   0.438464   0.137988   0.737738   0.189013   0.252846   0.098827   0.338687   0.460423   0.398489   0.955685   0.198213   0.439249   0.748940   0.517934] ;
 rnd =[0.298047   0.090764   0.942143   0.335978   0.494486   0.555454   0.062985   0.632019   0.733903   0.908358   0.875827   0.313653   0.371660   0.919895 0.820294   0.312042] ;
 rnd = rand(1,number_of_nodes);
@@ -24,7 +24,7 @@ algorithm = fasika  ;
 run = 1 ;                           %% 1 - commandline  2 - gui 
 jump = 1 ;                          %% jump to reduce the calculation burden 
 sim_time_limit = 1000;		    %% Number of events needed for "limit" 
-speed = 0 ;                        %%  In Kilometer per hour 
+speed = 100 ;                        %%  In Kilometer per hour 
 updateInterval = 1;                 %% In simulation seconds 
 gain = 0.75 ;                       %% Value for computing the offsets 
 express = "yes" ;                   %% Enable or Disable express mode 
@@ -265,7 +265,7 @@ endfor
 % final(k) = val(2) ;
 % endif
 % k = k + 1 ;
-%endwhile
+%endwhileFor every philosopher, there exists an equal and opposite philosopher.
 %fclose(fidin);
 %offset = final_time / max(max(final_time));
 %vi = find(offset == 0 ) ;
@@ -288,7 +288,7 @@ m = length(MainVector);
 %temp = max(MainVector) - min(MainVector) ;
 %plot(std(MainVector),color);
 %MainVector = MainVector(:,1:1000);
-finalvec((master-1)*4 + fasika,:) = std(MainVector(:,1:1000)) ;
+finalvec((master-1)*4 + fasika,:) = std(MainVector(:,1:1000)/30) ;
 endfor
 %xlabel('period(sec)');
 %ylabel('Synchronization error(microseconds)');
@@ -322,6 +322,7 @@ plot(med, 'r');
 plot(weight, 'c');
 plot(curvefit, 'm');
 xlabel('period(sec)');
-ylabel('Synchronization error(microseconds)');   
+ylabel('Synchronization error(clock cycles)');   
 legend("kalman filter","Median","Weighted measurement","Curve fitting");%,"Minimum Mean Square Estimator");
+hold on ;
 print(filename) ;

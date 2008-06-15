@@ -55,7 +55,7 @@ void MacLayer::handleMessage(cMessage* msg) {
                delete msg;
        }else{  
                logg("Collecting the offsets from Neighbours ....");
-               if(dblrand() > 0.05)
+//               if(dblrand() > 0.5)
                collect_data(msg);
                delete msg ;
        }
@@ -76,7 +76,6 @@ void MacLayer::collect_data(cMessage *pkt)
 void MacLayer::analyze_msg()
 {      
        logg("Adjusting the offset of ") ;
-       offset = 0 ;
        int neigh = count;
        double total = 0 ;
 
@@ -168,7 +167,7 @@ void MacLayer::analyze_msg()
 
 // Weighted Measurments ............
 
-       case 3:{ 
+       case 3:{ /*
 		offset = 0 ;
 		double maxx  ;
                 double fasika ;
@@ -192,7 +191,54 @@ void MacLayer::analyze_msg()
                 }
 		offset = offset * gain ;
 		offset += add_on ;
-                break;}
+                break;*/
+
+// Kalman filter .....
+               	double x; // estimated value of the variable to be considered 
+		double phi; // coefficient to bla bla the previous estimate in it
+		double H;  // adjustment matrix
+		double R;  // noise covariance
+		double P;  // error covariance 
+		double Ka;  // Kalman gain 
+		double Q;  // noise covariance  
+
+		// Initialize the matrices 
+
+		x = offset ; // Initial estimate 
+		P = 1 ; // Initial estimate of covariance matrix - error covariance matrix
+		
+		Q=1;
+		R=1e-6;
+		H = 1;
+		phi = 1;
+
+		// Loop 
+
+		for(int i=0;i<neigh;i++){
+			
+			// Time update "PREDICT"
+
+			x = phi*x ;  
+			P =  phi*P*phi + Q ;
+
+			// Measurment Update "CORRECT"
+
+			// Compute Kalman gain
+
+			Ka = P * H /(( H * P * H ) + R);	
+
+			// update estimate with measurement
+
+			x = x + Ka * (temp_varr[i] - (H * x) );
+
+			// update the error covariance
+
+			P = ( 1 - (Ka * H)) * P;	
+		}
+			offset = gain*x ;
+          		offset += add_on - 10e-6;
+               break;
+		}
         
        case 5:{
 
