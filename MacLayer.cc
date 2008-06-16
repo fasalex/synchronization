@@ -78,6 +78,8 @@ void MacLayer::analyze_msg()
        logg("Adjusting the offset of ") ;
        int neigh = count;
        double total = 0 ;
+       double median = 0;
+       double add_on ;
 
        for(int x = 0; x < neigh; x ++) {		
                for(int y = x+1; y < neigh; y ++) {
@@ -90,8 +92,6 @@ void MacLayer::analyze_msg()
                total = total + temp_varr[x] ;
        }
 
-       double median = 0;
-       double add_on ;
 
        if(neigh!=0)
        add_on = temp_varr[0] ;
@@ -104,7 +104,7 @@ void MacLayer::analyze_msg()
        if(neigh == 0)
                median = 0 ;
        else if ( neigh == 1)
-               median = temp_varr[0] ;
+               median = 0.5 * temp_varr[0] ;
        else if( neigh%2 == 0)
                median = 0.5 *(temp_varr[neigh/2 -1] + temp_varr[neigh/2]) ; 
        else if (neigh%2 == 1)
@@ -126,8 +126,8 @@ void MacLayer::analyze_msg()
 		x = offset ; // Initial estimate 
 		P = 1 ; // Initial estimate of covariance matrix - error covariance matrix
 		
-		Q=1;
-		R=1e-6;
+		Q = 1; // covariance matrix - 
+		R = 1e-6;
 		H = 1;
 		phi = 1;
 
@@ -157,6 +157,52 @@ void MacLayer::analyze_msg()
 			offset = gain*x ;
           		offset += add_on ;
                break;}
+/*		offset = ( int) (offset/30e-6) ;
+		int x; // estimated value of the variable to be considered 
+		int phi; // coefficient to bla bla the previous estimate in it
+		int H;  // adjustment matrix
+		int R;  // noise covariance
+		int P;  // error covariance 
+		int Ka;  // Kalman gain 
+		int Q;  // noise covariance  
+
+		// Initialize the matrices 
+
+		x = offset ; // Initial estimate 
+		P = 1 ; // Initial estimate of covariance matrix - error covariance matrix
+		
+		Q = 1; // covariance matrix - 
+		R = 1 ;
+		H = 1;
+		phi = 1;
+
+		// Loop 
+
+		for(int i=0;i<neigh;i++){
+			
+			// Time update "PREDICT"
+
+			x = phi*x ;  
+			P =  phi*P*phi + Q ;
+
+			// Measurment Update "CORRECT"
+
+			// Compute Kalman gain
+
+			Ka = P * H /(( H * P * H ) + R);	
+
+			// update estimate with measurement
+
+			x = x + Ka * ((int)(temp_varr[i]/30*1e-6) - (H * x) );
+
+			// update the error covariance
+
+			P = ( 1 - (Ka * H)) * P;	
+		}
+			offset = x/2 + x/4 ;
+          		offset += (int) add_on/(30*1e-6) ;
+               break;
+*/
 
       case 2:{
 // Median .........
@@ -165,9 +211,8 @@ void MacLayer::analyze_msg()
                break;}
 
 
-// Weighted Measurments ............
-
-       case 3:{ /*
+// Weighted Measurments ..........  
+       case 3:{ 
 		offset = 0 ;
 		double maxx  ;
                 double fasika ;
@@ -191,55 +236,7 @@ void MacLayer::analyze_msg()
                 }
 		offset = offset * gain ;
 		offset += add_on ;
-                break;*/
-
-// Kalman filter .....
-               	double x; // estimated value of the variable to be considered 
-		double phi; // coefficient to bla bla the previous estimate in it
-		double H;  // adjustment matrix
-		double R;  // noise covariance
-		double P;  // error covariance 
-		double Ka;  // Kalman gain 
-		double Q;  // noise covariance  
-
-		// Initialize the matrices 
-
-		x = offset ; // Initial estimate 
-		P = 1 ; // Initial estimate of covariance matrix - error covariance matrix
-		
-		Q=1;
-		R=1e-6;
-		H = 1;
-		phi = 1;
-
-		// Loop 
-
-		for(int i=0;i<neigh;i++){
-			
-			// Time update "PREDICT"
-
-			x = phi*x ;  
-			P =  phi*P*phi + Q ;
-
-			// Measurment Update "CORRECT"
-
-			// Compute Kalman gain
-
-			Ka = P * H /(( H * P * H ) + R);	
-
-			// update estimate with measurement
-
-			x = x + Ka * (temp_varr[i] - (H * x) );
-
-			// update the error covariance
-
-			P = ( 1 - (Ka * H)) * P;	
-		}
-			offset = gain*x ;
-          		offset += add_on - 10e-6;
-               break;
-		}
-        
+                break;}
        case 5:{
 
 // Curve fitting - logarithmic 
