@@ -3,6 +3,7 @@
 
 //---omnetpp part----------------------
 
+
 Define_Module(MacLayer);
 
 //---intialisation---------------------
@@ -214,104 +215,52 @@ void MacLayer::analyze_msg()
 // Weighted Measurments ..........  
        case 3:{ 
 		offset = 0 ;
-		double maxx  ;
+		int factor = 1 ;
                 double fasika ;
                 double weight[SIZE_OF_NETWORK];
-                double tempp[SIZE_OF_NETWORK] ;
                 double sum = 0 ;
 
                 for(int af = 0 ; af < neigh ; af ++) {
-                        tempp[af] = abs(temp_varr[af]-median);
-                        sum = sum + tempp[af] ;
+                        sum = sum + temp_varr[af] ;
                 }
-               
-                fasika =  sum * (neigh-0.9) ;
+                if(neigh==0){offset = 0 ;}else if(neigh==1){offset = temp_varr[0];}else{
+                fasika =  sum * (neigh-factor) ;
                 for (int m=0; m < neigh; m++){
 			if(fasika !=0)
-                         weight[m] = (sum - 0.9 * tempp[m]) / fasika ;
+                         weight[m] = (sum - factor*temp_varr[m]) / fasika ;
 			else 
 			 weight[m] = 0 ;
 
                          offset = offset + (temp_varr[m] * weight[m]) ;
-                }
+                }}
 		offset = offset * gain ;
 		offset += add_on ;
                 break;}
-       case 5:{
-
-// Curve fitting - logarithmic 
-
-               double a,b,sum,sumsq,sumprod,sumprodsum,sumy = 0;
-               int varr = 1 ;
-               bool change = false ;  
-               double cmp = 30e-6 ;
-               for(int k=0 ; k<count ; k++){
-                       if((temp_varr[k] >= 0) && (change == false)){
-                               varr = k+1 ;
-                               change = true;
-                       }
-		       sumy += (temp_varr[k] + cmp);
-                       sum += log(k+1);
-                       sumsq += pow(log(k+1),2);
-                       sumprod += (temp_varr[k]+cmp) * log(k+1);   
-               }
-
-               for(int k=0;k<count;k++){
-                       sumprodsum += (temp_varr[k] + cmp)*sum ;
-               }
-
-               b = (count*sumprod - sumy*sum)/(count*sumsq - (sum*sum));
-               a = (sumy - b*sum) / count ;
-               offset = a + b*log((double)count/2) ;
-	       offset = offset - cmp ;
-	       offset *= gain ;
-               offset += add_on ;
-	       break;
-       }
        case 4:{
 
+// Curve fitting - logarithmic 
+		offset = 0 ;
+               double a,b,sum,sumsq,sumprod,sumy = 0;
+               double cmp = 30e-6 ;
+               for(int k=0 ; k<count ; k++){                    
+		       sumy += (temp_varr[k] + cmp);
+                       sum += log(k+1);
+                       sumsq += log(k+1)*log(k+1);
+                       sumprod += (temp_varr[k]+cmp) * log(k+1);   
+               }
+		double temp = count*sumsq - (sum*sum) ;
+		if((temp !=0) && count!=0){
+               		b = (count*sumprod - sumy*sum)/(temp);
+               		a = (sumy - b*sum) / count ;
+               		offset = a + b*log((double)count/2) ;
+               		offset = offset + add_on - cmp ;
+			offset *= gain ;
+		}			
+	       break;
+       }
+       case 5:{
+
 // MMSE estimator ....
-
-		double x; // estimated value of the variable to be considered 
-		double phi; // coefficient to bla bla the previous estimate in it
-		double H;  // adjustment matrix
-		double R;  // noise covariance
-		double P;  // error covariance 
-		double Ka;  // Kalman gain 
-		double Q;  // noise covariance  
-
-		// Initialize the matrices 
-
-		x = offset ; 	// Initial estimate 
-		P = 1 ; 	// Initial estimate of covariance matrix - error covariance matrix
-
-		phi = 1 ;
-		Q = 1;
-		R = 1e-6;
-		H = 1 ;
-
-		for(int i=0;i<neigh;i++){
-			
-		        // Measurment Update "CORRECT"
-			// Compute Kalman gain
-
-			Ka = P * H /(( H * P * H ) + R);	
-
-			// update estimate with measurement
-
-			x = x + Ka * (temp_varr[i] - (H * x) );
-
-			// update the error covariance
-
-			P = ( 1 - (Ka * H)) * P;	
-			}
-			offset = gain * x ;
-          		offset += add_on ;
-               break;
-	}
- 	case 6:{
-
-	// MMSE estimator ....
 
 		double x; // estimated value of the variable to be considered 
 		double phi; // coefficient to bla bla the previous estimate in it
