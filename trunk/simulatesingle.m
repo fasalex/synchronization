@@ -8,9 +8,9 @@ rnd = [0.443974   0.796548   0.438464   0.137988   0.737738   0.189013   0.25284
 rnd =[0.298047   0.090764   0.942143   0.335978   0.494486   0.555454   0.062985   0.632019   0.733903   0.908358   0.875827   0.313653   0.371660   0.919895 0.820294   0.312042] ;
 rnd = rand(1,number_of_nodes);
 hold on ;
-for fasika = 1:4
+for fasika = 1:1
 keep('fasika','number_of_nodes','rnd');
-algorithm = fasika  ;
+algorithm = 4 ;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          INPUT PARAMETERS FOR THE SIMULATION                         %%%%%%%%%%%%%%
@@ -18,7 +18,7 @@ algorithm = fasika  ;
 run = 1 ;                           %% 1 - commandline  2 - gui 
 jump = 1 ;                          %% jump to reduce the calculation burden 
 sim_time_limit = 1000;		    %% Number of events needed for "limit" 
-speed = 7 ;                         %%  In Kilometer per hour 
+speed = 10 ;                         %%  In Kilometer per hour 
 updateInterval = 1;                 %% In simulation seconds 
 gain = 0.75 ;                       %% Value for computing the offsets 
 express = "yes" ;                   %% Enable or Disable express mode 
@@ -26,7 +26,7 @@ alpha = 2.5 ;                       %% Channel factor - attenuation if you might
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          END OF PARAMETERS , OUT                                     %%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+gain = 1.25;
 if (fasika == 1)
 color = 'b' ;
 elseif(fasika == 2 )
@@ -40,7 +40,8 @@ color = 'c';
 elseif(fasika == 6)
 color = 'w';
 endif
-
+algor = int2str(algorithm);
+disp(algor) ;
 prefix = "/home/fasika/mixim/trunk/examples/synchronization/graphs/";	% output directory
 model = "./New";		  % simulation command
 
@@ -282,12 +283,12 @@ endfor
 m = length(MainVector);
 MainVector(:,sim_time_limit:m) = MainVector(1,sim_time_limit-1) ;
 %temp = max(MainVector) - min(MainVector) ;
-plot(std(MainVector/30),color);
+plot(std(MainVector),color);
 MainVector = MainVector(:,1:1000);
 endfor
 xlabel('period(sec)');
-ylabel('Synchronization error(clock cycles)');
-legend("kalman filter","Median","Weighted measurement","Curve fitting");%,"Minimum Mean Square Estimator");
+ylabel('Synchronization error(microseconds)');
+legend("kalman filter","Median","Weighted measurement","Curve fitting","MMSE estimator","Control group");%,"Minimum Mean Square Estimator");
 print(filename);
 hold on ;
 disp("SIMULATION ENDED") ;
