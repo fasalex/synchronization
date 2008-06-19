@@ -30,9 +30,9 @@
 #include "mcUart.h"
 #endif
 
-#define KALMAN_FILTER
-#define CURVE_FITTING
-#define WEIGHT_MEASURMENT
+//#define KALMAN_FILTER
+//#define CURVE_FITTING
+//#define WEIGHT_MEASURMENT
 #define MEDIAN
 
 extern volatile Frame gMacFrame;   //!< Global value for a frame
@@ -60,9 +60,9 @@ void gMacSynchronize(void) {
        || (gMacFrame.syncState == NETWORK_CATCHED)
        || (gMacFrame.syncState == DO_PHASE_SYNC)) {
 #ifdef MC_DEBUG_PRINT_SYNC
-        if (gMacFrame.syncState == NETWORK_CATCH) mcUartPutChar('C');
-        else if (gMacFrame.syncState == NETWORK_CATCHED) mcUartPutChar('d');
-        else if (gMacFrame.syncState == DO_PHASE_SYNC) mcUartPutChar('?');
+        if (gMacFrame.syncState == NETWORK_CATCH) dbgPrintChar('C');
+        else if (gMacFrame.syncState == NETWORK_CATCHED) dbgPrintChar('d');
+        else if (gMacFrame.syncState == DO_PHASE_SYNC) dbgPrintChar('?');
 #endif
         return;
     }
@@ -88,26 +88,34 @@ void gMacSynchronize(void) {
                 }
                 gMacFrame.phaseError = phaseError;
                 gMacFrame.syncState = DO_PHASE_SYNC;
-                mcSetDebugSignal5();
                 sei();
 #ifdef MC_DEBUG_PRINT_SYNC
-                mcUartPutStr("\nFound Network, r:");
-                mcUartPutHex4(rxStatistics[i].myRxSlot);
-                mcUartPutStr(" t:");
-                mcUartPutHex4(rxStatistics[i].nbTxSlot);
-                mcUartPutStr(" p:");
-                mcUartPutHex4(gMacFrame.phaseError);
-                mcUartPutStr(" s:");
-                mcUartPutHex4(slotError);
-                mcUartPutStr(" f:");
-                mcUartPutHex4(gMacFrame.lastFrameSlot);
+                dbgPrintStr("\nFound Network, r:");
+                dbgPrintHex4(rxStatistics[i].myRxSlot);
+                dbgPrintStr(" t:");
+                dbgPrintHex4(rxStatistics[i].nbTxSlot);
+                dbgPrintStr(" p:");
+                dbgPrintHex4(gMacFrame.phaseError);
+                dbgPrintStr(" s:");
+                dbgPrintHex4(slotError);
+                dbgPrintStr(" f:");
+                dbgPrintHex4(gMacFrame.lastFrameSlot);
 #endif
-                mcClearDebugSignal5();        
                 return;
             }
         }
-#ifdef MEDIAN
         // Here I'm in the normal slot synchronization mode:
+
+    mcSetDebugSignal5();
+// Set the debug signal 
+
+#ifdef MEDIAN
+
+// Median synchronization algorithm: 
+
+#ifdef MC_DEBUG_PRINT_SYNC
+        dbgPrintStr("\n MEDIAN ");
+#endif
         if (nNeighbours <= 2) {
             // I have just one or two neighbours. Use the phase information of the first one:
             phaseError = rxStatistics[0].phaseError;
@@ -117,7 +125,7 @@ void gMacSynchronize(void) {
             // There are more than two neighbours.
             // Now do a bubble sort of the slot and phase shifts:
             for (i = 1; i < nNeighbours; i++) {
-                for (n = nNeighbours-1; n >= i; n--) {
+                for (n = nNeighbours-1; n > i; n--) {
                     if ((rxStatistics[n-1].nbSlotOffset > rxStatistics[n].nbSlotOffset) ||
                         ((rxStatistics[n-1].nbSlotOffset == rxStatistics[n].nbSlotOffset) &&
                          (rxStatistics[n-1].phaseError > rxStatistics[n].phaseError))) {
@@ -142,9 +150,9 @@ void gMacSynchronize(void) {
             gMacFrame.syncState = DO_PHASE_SYNC;
             sei();
 #ifdef MC_DEBUG_PRINT_SYNC
-            mcUartPutHex(nNeighbours);
-            mcUartPutHex2(gMacFrame.phaseError);
-            mcUartPutChar(' ');
+            dbgPrintHex(nNeighbours);
+            dbgPrintHex2(gMacFrame.phaseError);
+            dbgPrintChar(' ');
 #endif
         }
         else {
@@ -159,43 +167,55 @@ void gMacSynchronize(void) {
             gMacFrame.lastFrameSlot = slotError + TOTAL_FRAME_SLOTS - 1;
             gMacFrame.phaseError = phaseError;
             gMacFrame.syncState = DO_PHASE_SYNC;
-            mcSetDebugSignal5();
             sei();
 
         }
 #endif 
+
+
 #ifdef KALMAN_FILTER 
-		for (i = 0; i < nNeighbours; i++) {
-                	for (n = nNeighbours-1; n >= i; n--) {
-                    		if ((rxStatistics[n-1].nbSlotOffset > rxStatistics[n].nbSlotOffset) ||
-                        		((rxStatistics[n-1].nbSlotOffset == rxStatistics[n].nbSlotOffset) &&
-                         	(rxStatistics[n-1].phaseError > rxStatistics[n].phaseError))) {
-                        	tmp = rxStatistics[n];
-                        	rxStatistics[n] = rxStatistics[n-1];  // Flip elements
-                        	rxStatistics[n-1] = tmp;
-                    	}
-                	}
-            	}
-		int totalError ; 
-		int x; // estimated value of the variable to be considered 
-		int phi ; // prediction factor 
-		int R;  // noise covariance
-		int P;  // error covariance 
-		int Ka;  // Kalman gain 
-		int Q;  // noise covariance  
+
+// Application of the Kalman filter to the synchronization of Nodes
+
+#ifdef MC_DEBUG_PRINT_SYNC
+        dbgPrintStr("\n KALMAN ");
+#endif
+        if (nNeighbours > 1) {
+            // There are two or more neighbours.
+            // Now do a bubble sort of the slot and phase shifts:
+            for (i = 0; i < nNeighbours; i++) {
+                for (n = nNeighbours-1; n > i; n--) {
+                    if ((rxStatistics[n-1].nbSlotOffset > rxStatistics[n].nbSlotOffset) ||
+                       ((rxStatistics[n-1].nbSlotOffset == rxStatistics[n].nbSlotOffset) &&
+                        (rxStatistics[n-1].phaseError > rxStatistics[n].phaseError))) {
+                       tmp = rxStatistics[n];
+                       rxStatistics[n] = rxStatistics[n-1];  // Flip elements
+                       rxStatistics[n-1] = tmp;
+                    }
+                }
+            }
+        }
+	int totalError ; 
+	int x;    // estimated value of the variable to be considered 
+	int phi ; // prediction factor 
+	int R;    // noise covariance
+	int P;    // error covariance 
+	int Ka;   // Kalman gain 
+	int Q;    // noise covariance 
+        int H; 
 
 		// Initialize the matrices 
 
-		x = 0 ; // Initial estimate 
-		P = 1 ;          // Initial estimate of covariance matrix - error covariance matrix
-		Q = 10;          // covariance matrix - 
-		R = 1 ;
-		H = 1;
-		phi = 5/4;
+	x = 0 ;   // Initial estimate 
+	P = 1 ;   // Initial estimate of covariance matrix - error covariance matrix
+	Q = 10;   // covariance matrix - 
+	R = 1 ;
+	H = 1;
+	phi = 5/4;
 
-		// Loop 
+	// Loop 
 
-		for(int i=0;i<nNeighbours;i++){
+	for(i=0; i<nNeighbours; i++) {
 			
 			totalError = rxStatistics[i].nbSlotOffset *(uint8_t)SLOT_TIME + rxStatistics[i].phaseError ;
 			
@@ -216,48 +236,62 @@ void gMacSynchronize(void) {
 			// update the error covariance
 
 			P = ( 1 - (Ka * H)) * P;	
-		}
-			phaseError =  x%SLOT_TIME;
-			slotError = x/SLOT_TIME;
- 	    cli();
-            gMacFrame.lastFrameSlot = slotError + TOTAL_FRAME_SLOTS - 1;
-            gMacFrame.phaseError = phaseError;
-            gMacFrame.syncState = DO_PHASE_SYNC;
-            mcSetDebugSignal5();
-            sei();
-#endif 
-#ifdef WEIGHT_MEASURMENT
-		int maxx ;
-		int temp ;
-                int weight[5];
-                int tempp[5] ;
-                int sum = 0 ;
+	}
 
-		for(int i=0;i<nNeighbours;i++){
-			totalError[i] = rxStatistics[i].nbSlotOffset *(uint8_t)SLOT_TIME + rxStatistics[i].phaseError ;			
-                        tempp[i] = abs(totalError);
-                        sum = sum + tempp[i] ;
-                }
-               
-                temp  =  sum * (nNeighbours - 1) ;
-		for(int i=0;i<nNeighbours;i++){
-			if(fasika !=0)
-                         weight[i] = (sum - 0.9 * tempp[i]) / fasika ;
-			else 
-			 weight[i] = 0 ;
-
-                         maxx = maxx + (totalError[i] * weight[i]) ;
-                }
-		phaseError =  maxx%SLOT_TIME;
-		slotError = maxx/SLOT_TIME;
- 		cli();
-            	gMacFrame.lastFrameSlot = slotError + TOTAL_FRAME_SLOTS - 1;
-            	gMacFrame.phaseError = phaseError;
-            	gMacFrame.syncState = DO_PHASE_SYNC;
-            	mcSetDebugSignal5();
-            	sei();
-                }
+	phaseError = x % SLOT_TIME;
+	slotError  = x / SLOT_TIME;
+#ifdef MC_DEBUG_PRINT_SYNC
+        dbgPrintHex4(phaseError);
+        dbgPrintChar(':');
+        dbgPrintHex4(slotError);
 #endif
+ 	cli();
+        gMacFrame.lastFrameSlot = slotError + TOTAL_FRAME_SLOTS - 1;
+        gMacFrame.phaseError = phaseError;
+        gMacFrame.syncState = DO_PHASE_SYNC;
+        sei();
+#endif 
+
+
+#ifdef WEIGHT_MEASURMENT
+
+// Application of Weighted approach to the synchronization of Nodes
+
+#ifdef MC_DEBUG_PRINT_SYNC
+        dbgPrintStr("\n WEIGHT_MEASUREMENT");
+#endif
+	int maxx = 0;
+	int temp ;
+        int weight[5];
+        int sum = 0 ;
+	int totalError[5] ;
+
+	for (i=0; i<nNeighbours; i++) {
+		totalError[i] = abs(rxStatistics[i].nbSlotOffset *(uint8_t)SLOT_TIME + rxStatistics[i].phaseError );			
+        	sum = sum + totalError[i] ;
+        }
+               
+        temp = sum * (nNeighbours - 1) ;
+	for (i=0; i<nNeighbours; i++) {
+		if (temp !=0)
+        		weight[i] = (sum - totalError[i]) / temp ;
+		else 
+	    		weight[i] = 0 ;
+	
+        	maxx = maxx + (totalError[i] * weight[i]) ;
+        }
+	
+	phaseError = maxx%SLOT_TIME;
+	slotError  = maxx/SLOT_TIME;
+ 	cli();
+        gMacFrame.lastFrameSlot = slotError + TOTAL_FRAME_SLOTS - 1;
+        gMacFrame.phaseError = phaseError;
+        gMacFrame.syncState = DO_PHASE_SYNC;
+        sei();
+               
+#endif
+        mcClearDebugSignal5();        
+/*
 #ifdef CURVE_FITTING
 
 	       int a,b,sum,sumsq,sumprod,sumprodsum,sumy,temp = 0;
@@ -280,36 +314,33 @@ void gMacSynchronize(void) {
                gMacFrame.lastFrameSlot = slotError + TOTAL_FRAME_SLOTS - 1;
                gMacFrame.phaseError = phaseError;
                gMacFrame.syncState = DO_PHASE_SYNC;
-               mcSetDebugSignal5();
                sei();	
-#endif 
+#endif */ 
 #ifdef MC_DEBUG_PRINT_SYNC
-            mcUartPutStr(" #");
-            mcUartPutHex(nNeighbours);
-            mcUartPutChar('.');
-            mcUartPutHex2(gMacFrame.phaseError);
-            mcUartPutChar('.');
-            mcUartPutHex2(slotError);
-            mcUartPutChar('.');
-            mcUartPutHex4(gMacFrame.lastFrameSlot);
-            mcUartPutChar(' ');
+            dbgPrintStr(" #");
+            dbgPrintHex(nNeighbours);
+            dbgPrintChar('.');
+            dbgPrintHex2(gMacFrame.phaseError);
+            dbgPrintChar('.');
+            dbgPrintHex2(slotError);
+            dbgPrintChar('.');
+            dbgPrintHex4(gMacFrame.lastFrameSlot);
+            dbgPrintChar(' ');
 #endif
 #ifdef MC_DEBUG_PRINT_SYNC
-        mcUartPutStr("\nS ");
+        dbgPrintStr("\nS ");
         for (i=0; i<nNeighbours; i++) {
-            mcUartPutStr(" r:");
-            mcUartPutHex4(rxStatistics[i].myRxSlot);
-            mcUartPutStr(" t:");
-            mcUartPutHex4(rxStatistics[i].nbTxSlot);
-            mcUartPutStr(" o:");
-            mcUartPutHex4(rxStatistics[i].nbSlotOffset);
-            mcUartPutStr(" p:");
-            mcUartPutHex4(rxStatistics[i].phaseError);
-            mcUartPutStr("\n  ");
+            dbgPrintStr(" r:");
+            dbgPrintHex4(rxStatistics[i].myRxSlot);
+            dbgPrintStr(" t:");
+            dbgPrintHex4(rxStatistics[i].nbTxSlot);
+            dbgPrintStr(" o:");
+            dbgPrintHex4(rxStatistics[i].nbSlotOffset);
+            dbgPrintStr(" p:");
+            dbgPrintHex4(rxStatistics[i].phaseError);
+            dbgPrintStr("\n  ");
         }
 #endif
-
-        mcClearDebugSignal5();        
         return;
     }
 }
