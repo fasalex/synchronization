@@ -1,13 +1,10 @@
 clf ;
-
 system("rm *.vec");
 system("rm *.sca");
-
 number_of_nodes = 20 ;
-rnd = [0.443974   0.796548   0.438464   0.137988   0.737738   0.189013   0.252846   0.098827   0.338687   0.460423   0.398489   0.955685   0.198213   0.439249   0.748940   0.517934] ;
-rnd =[0.298047   0.090764   0.942143   0.335978   0.494486   0.555454   0.062985   0.632019   0.733903   0.908358   0.875827   0.313653   0.371660   0.919895 0.820294   0.312042] ;
 rnd = rand(1,number_of_nodes);
 hold on ;
+
 for fasika = 1:1
 keep('fasika','number_of_nodes','rnd');
 algorithm = 4 ;
@@ -18,7 +15,7 @@ algorithm = 4 ;
 run = 1 ;                           %% 1 - commandline  2 - gui 
 jump = 1 ;                          %% jump to reduce the calculation burden 
 sim_time_limit = 1000;		    %% Number of events needed for "limit" 
-speed = 10 ;                         %%  In Kilometer per hour 
+speed = 0 ;                         %%  In Kilometer per hour 
 updateInterval = 1;                 %% In simulation seconds 
 gain = 0.75 ;                       %% Value for computing the offsets 
 express = "yes" ;                   %% Enable or Disable express mode 
@@ -26,7 +23,6 @@ alpha = 2.5 ;                       %% Channel factor - attenuation if you might
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          END OF PARAMETERS , OUT                                     %%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-gain = 1.25;
 if (fasika == 1)
 color = 'b' ;
 elseif(fasika == 2 )
@@ -63,7 +59,7 @@ gai = int2str(gain*10);
 no = int2str(number_of_nodes);
 ra = int2str(rand()*1000 );
 alp = int2str(alpha*100);
-ext = '.eps';
+ext = '.fig';
 filename = strcat(prefix,'s',ra,spe,'-g',gai,'-n',no,'-alpha',alp,ext);
 
 playgroundSizeX =  (sqrt(number_of_nodes) + 1)*100 ;	    %% meters
@@ -241,54 +237,15 @@ endfor
 fclose(fidin);
 endfor
 
-%% The vector which contains the time information about the nodes
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% Data extracting from the scalar file ....
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%fidin = fopen(scalarname, "r", "native");
-%k=0;
-%if (fidin==-1)
-% error("Unable to open the scalar file");
-%endif
-%while 1
-% iString=fgetl(fidin);
-% if ~ischar(iString)
-% break;
-% endif
-% [val, count] = sscanf(iString, "scalar \"mobileNet.Node[%d].normalNic.mac\" \"Time at last\" %f");
-% if( count == 0)
-% else
-% final_time(k,k) = val(2);
-% final(k) = val(2) ;
-% endif
-% k = k + 1 ;
-%endwhile
-%fclose(fidin);
-%offset = final_time / max(max(final_time));
-%vi = find(offset == 0 ) ;
-%offset(vi) = nan ;
-%[X Y] = meshgrid(x,y);
-%I = input( "Do U want to plot the 3D graph? 0/1 " ) ;
-%if ( I == 1)
-%mesh(X,Y,offset);
-%axis([0 1000 0 1000 0 1 ]);
-%figure;
-%plot3(x,y,final/max(final),'*');
-%axis([0 1000 0 1000 0 1 ]);
-%endif
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% End of Simulation -- Deleting files
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 m = length(MainVector);
 MainVector(:,sim_time_limit:m) = MainVector(1,sim_time_limit-1) ;
 %temp = max(MainVector) - min(MainVector) ;
-plot(std(MainVector),color);
+plot(std(MainVector/30),color);
 MainVector = MainVector(:,1:1000);
 endfor
 xlabel('period(sec)');
-ylabel('Synchronization error(microseconds)');
-legend("kalman filter","Median","Weighted measurement","Curve fitting","MMSE estimator","Control group");%,"Minimum Mean Square Estimator");
+ylabel('Synchronization error(clock cycles)');
+legend("KALMAN FILTER","MEDIAN","WEIGHTED MEASURMENTS","NONLINEAR CURVE FITTING");
 print(filename);
 hold on ;
 disp("SIMULATION ENDED") ;
