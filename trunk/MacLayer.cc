@@ -204,17 +204,17 @@ void MacLayer::analyze_msg()
        case 4:{
 // Non-linear least square curve fitting 
 		double a,b, sum, sumlog, sumprod, sumsq = 0 ;
-		double ga = 1 ;
+		double ga = 30*1e-6 ;
 		if(count == 0)
 			offset = 0 ;
 		else if(count == 1)
-		    offset = temp_varr[0]*ga / 2 ;
+		    offset = temp_varr[0]/ 2 ;
 		else{
 			for(int i = 0;i<count;i++){
-				sum += temp_varr[i]*ga;
-				sumlog += log((double)(i+2));
-				sumprod += temp_varr[i]*ga*log((double)(i+2));
-				sumsq += log((double)(i+1))*log((double)(i+2));
+				sum += temp_varr[i]/ga;
+				sumlog += 0.4*(double)(i+1);
+				sumprod += temp_varr[i]/ga*0.4*(double)(i+1);
+				sumsq += 0.16*(double)(i+1)*(double)(i+1);
 			}
 			double control = count*sumsq - sumlog*sumlog ;
 			if(control!=0){
@@ -222,14 +222,12 @@ void MacLayer::analyze_msg()
 			a = (sum - b*sumlog)/count;
 			offset = a + b*log((double)(count/2 + 1));}
 			else offset = 0 ;
+			offset = offset * ga ;
 		}
-		offset = offset / ga ;
 		offset = offset * gain ;
 		offset  += add_on ;
 		output_vec.record(offset);
 		break;}
-
-
        default:
                offset = 0;
                break;

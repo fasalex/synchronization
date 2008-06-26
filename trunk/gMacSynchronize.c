@@ -314,18 +314,19 @@ void gMacSynchronize(void) {
 	       int sumsq = 0 ;
 	       int sumprod = 0 ;
 	       int sumy = 0;
-	       int temp = 0;
                int cmp = 1 ;
-               for(int k=0 ; k<nNeighbours ; k++){
+	       int k ;
+	       int totalError[10] ;
+               for(k=0 ; k<nNeighbours ; k++){
 		       totalError[k] = rxStatistics[i].nbSlotOffset *(uint8_t)SLOT_TIME + rxStatistics[i].phaseError ;
 		       sumy += (totalError[k] + 1);
-                       sum += log(k+1);
-                       sumsq += pow(log(k+1),2);
-                       sumprod += (totalError[k]+cmp) * log(k+1);   
+                       sum += 0.4*k;
+                       sumsq += 0.16*k*k;
+                       sumprod += (totalError[k]+cmp) * 0.4*k;   
                }          
-               int b = (nNeighbours*sumprod - sumy*sum)/(count*sumsq - (sum*sum));
+               int b = (nNeighbours*sumprod - sumy*sum)/(nNeighbours*sumsq - (sum*sum));
                int a = (sumy - b*sum) / nNeighbours ;
-               temp = a + b*log(nNeighbours/2 +1) ;
+               int temp = a + b*0.4*(nNeighbours/2) ;
 	       phaseError =  temp%SLOT_TIME;
 	       slotError = temp/SLOT_TIME;
  	       cli();
