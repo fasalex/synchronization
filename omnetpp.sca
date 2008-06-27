@@ -1,0 +1,21 @@
+run 0 "mobileNet"
+scalar "mobileNet.Node[0].normalNic.mac" 	"Time at last" 	0.000281852600098
+scalar "mobileNet.Node[1].normalNic.mac" 	"Time at last" 	0.000847259674072
+scalar "mobileNet.Node[2].normalNic.mac" 	"Time at last" 	0.000516444793701
+scalar "mobileNet.Node[3].normalNic.mac" 	"Time at last" 	4.34407043457e-05
+scalar "mobileNet.Node[4].normalNic.mac" 	"Time at last" 	0.000546351043701
+scalar "mobileNet.Node[5].normalNic.mac" 	"Time at last" 	0.000306503662109
+scalar "mobileNet.Node[6].normalNic.mac" 	"Time at last" 	0.000674631439209
+scalar "mobileNet.Node[7].normalNic.mac" 	"Time at last" 	0.000771024932861
+scalar "mobileNet.Node[8].normalNic.mac" 	"Time at last" 	0.000766396331787
+scalar "mobileNet.Node[9].normalNic.mac" 	"Time at last" 	0.000216999084473
+scalar "mobileNet.Node[10].normalNic.mac" 	"Time at last" 	0.000772709991455
+scalar "mobileNet.Node[11].normalNic.mac" 	"Time at last" 	0.000546894439697
+scalar "mobileNet.Node[12].normalNic.mac" 	"Time at last" 	0.000430050140381
+scalar "mobileNet.Node[13].normalNic.mac" 	"Time at last" 	0.000712225769043
+scalar "mobileNet.Node[14].normalNic.mac" 	"Time at last" 	0.000122773864746
+scalar "mobileNet.Node[15].normalNic.mac" 	"Time at last" 	0.000267662353516
+scalar "mobileNet.Node[16].normalNic.mac" 	"Time at last" 	0.000412529602051
+scalar "mobileNet.Node[17].normalNic.mac" 	"Time at last" 	0.000375857452393
+scalar "mobileNet.Node[18].normalNic.mac" 	"Time at last" 	0.00023505859375
+scalar "mobileNet.Node[19].normalNic.mac" 	"Time at last" 	0.000533015716553
