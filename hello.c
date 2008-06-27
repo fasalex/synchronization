@@ -3,9 +3,9 @@
 #include <stdio.h>
 
 #define KALMAN_FILTER
-#define CURVE_FITTING
-#define WEIGHT_MEASURMENT
-#define MEDIAN
+//#define CURVE_FITTING
+//#define WEIGHT_MEASURMENT
+//#define MEDIAN
 /**
  * \brief Perform the slot and phase synchronization algorithm.
  */
@@ -21,6 +21,7 @@ main() {
     int totalError[10];
     int medianerror;
     int kalmanerror ; 
+
 
 #ifdef MEDIAN
 
@@ -120,7 +121,6 @@ main() {
 // Application of Weighted approach to the synchronization of Nodes
 
 	int maxx = 0;
-	int temp ;
         int weight[5];
         int summ = 0 ;
 	float cons ;
@@ -175,8 +175,8 @@ main() {
                int b = (nNeighbours*sumprod - sumy*sum)/(nNeighbours*sumsq - (sum*sum));
                int a = (sumy - b*sum) / nNeighbours ;
                int tempp = a + b*0.4*(nNeighbours/2) ;
-	       phaseError =  temp%SLOT_TIME;
-	       slotError = temp/SLOT_TIME;
+	       phaseError =  tempp%SLOT_TIME;
+	       slotError = tempp/SLOT_TIME;
  	       
 #endif 
 
