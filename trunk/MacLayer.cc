@@ -47,7 +47,7 @@ void MacLayer::initialize(int stage) {
 void MacLayer::handleMessage(cMessage* msg) {
        if( msg->kind() == BROADCAST_MESSAGE ){
                logg("Sending Broadcast Messages to the physical Layer ....");
-//               output_vec.record(broadcast_time*1000000) ;
+               output_vec.record(broadcast_time*1000000) ;
                sendDown(msg);
        }
        else if ( msg->kind() == CONTROL_MESSAGE){
@@ -158,11 +158,13 @@ void MacLayer::analyze_msg()
 			P = ( 1 - (Ka * H)) * P;	
 		}
 			offset  = gain*x ;
+			if(offset !=0)
           		offset += add_on ;
                break;}
       case 2:{
 // Median .........
                offset = gain*median ;
+	       if(median!=0)		
                offset += add_on ;
                break;}
 
@@ -174,22 +176,24 @@ void MacLayer::analyze_msg()
                 double fasika ;
                 double weight[100];
                 double sum = 0 ;
+		double sumcons = 0 ;
 		double cons = 1 ;
-		for(int i = 0 ; i < neigh ; i++){
+		for(int i = 0 ; i < count ; i++){
 			if(temp_varr[i] < 9*30*1e-6)
-				cons = 0.8 ;
+				cons = 0.9 ;
 			else if( temp_varr[i] < 18*30*1e-6)
-				cons = 0.3 ;
+				cons = 0.6 ;
 			else if( temp_varr[i] < 27*30*1e-6)
-				cons = 0.1 ;
+				cons = 0.3 ;
 			else 
-				cons = 0.05 ;
+				cons = 0.01 ;
 		        temp_varr[i] = cons * temp_varr[i] ;
 			sum += temp_varr[i] ;
+			sumcons += cons ;
 		}
 	
-	        if(neigh==0){offset = 0 ;}else if(neigh==1){offset = temp_varr[0];}else{
-                fasika =  sum * (neigh-1*factor) ;
+	       /* if(neigh==0){offset = 0 ;}else if(neigh==1){offset = temp_varr[0];}else{
+                /*fasika =  sum * (neigh-1*factor) ;
                 for (int m=0; m < neigh; m++){
 			if(fasika !=0)
                          weight[m] = (sum - factor*temp_varr[m]) / fasika ;
@@ -197,10 +201,14 @@ void MacLayer::analyze_msg()
 			 weight[m] = 0 ;
 
                          offset = offset + (temp_varr[m] * weight[m]) ;
-                }}
+                }}*/
+		if(sumcons!=0){
+		offset = sum / sumcons ;
 		offset = offset * gain ;
-		offset += add_on ;
-                break;}
+		offset += add_on ;}
+                else
+		offset = 0 ;
+		break;}
        case 4:{
 // Non-linear least square curve fitting 
 		double a,b, sum, sumlog, sumprod, sumsq = 0 ;
@@ -213,7 +221,7 @@ void MacLayer::analyze_msg()
 			for(int i = 0;i<count;i++){
 				sum += temp_varr[i]/ga;
 				sumlog += 0.4*(double)(i+1);
-				sumprod += temp_varr[i]/ga*0.4*(double)(i+1);
+				sumprod += (temp_varr[i]/ga)*0.4*(double)(i+1);
 				sumsq += 0.16*(double)(i+1)*(double)(i+1);
 			}
 			double control = count*sumsq - sumlog*sumlog ;
@@ -226,13 +234,15 @@ void MacLayer::analyze_msg()
 		}
 		offset = offset * gain ;
 		offset  += add_on ;
-		output_vec.record(offset);
+		offset = gain*median ;
+	        if(median!=0)		
+                offset += add_on ;
 		break;}
        default:
                offset = 0;
                break;
        }
-     
+
        broadcast_time = broadcast_time - offset + frequency ;
        Ref = Ref - offset + frequency ;
 

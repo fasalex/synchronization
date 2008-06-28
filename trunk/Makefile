@@ -9,8 +9,8 @@
 TARGET = New
 
 # User interface (uncomment one) (-u option)
-#USERIF_LIBS=$(CMDENV_LIBS)
-USERIF_LIBS=$(TKENV_LIBS)
+USERIF_LIBS=$(CMDENV_LIBS)
+#USERIF_LIBS=$(TKENV_LIBS)
 
 # .ned or .h include paths with -I
 INCLUDE_PATH= -I../../include
