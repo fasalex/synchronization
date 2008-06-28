@@ -1,5 +1,5 @@
 %%%% The begining of the end !!!!!!!!!!
-iter = 1;
+iter = 1 ;
 finalvec = zeros(iter,1000);
 figure ;
 for master=1:iter 
@@ -22,7 +22,7 @@ algorithm = fasika  ;
 run = 1 ;                           %% 1 - commandline  2 - gui 
 jump = 1 ;                          %% jump to reduce the calculation burden 
 sim_time_limit = 1000;		    %% Number of events needed for "limit" 
-speed = 0 ;                        %%  In Kilometer per hour 
+speed = 20;                        %%  In Kilometer per hour 
 updateInterval = 1;                 %% In simulation seconds 
 gain = 0.75 ;                       %% Value for computing the offsets 
 express = "yes" ;                   %% Enable or Disable express mode 
@@ -264,10 +264,10 @@ weight = weight / iter ;
 curvefit = curvefit / iter ;
 %% PLOT THE DAMN AVERAGED GRAPHS FROM THE VARIABLES
 hold on ;
-plot(kalman, 'b');
-plot(med, 'r');
-plot(weight, 'c');
-plot(curvefit, 'm');
+plot(kalman, 'b','LineWidth',2);
+plot(med, 'r','LineWidth',2);
+plot(weight, 'c','LineWidth',2);
+plot(curvefit, 'm','LineWidth',2);
 
 xlabel('period(sec)');
 ylabel('Synchronization error(clock cycles)');
