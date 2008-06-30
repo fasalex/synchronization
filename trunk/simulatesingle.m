@@ -5,18 +5,17 @@ number_of_nodes = 20 ;
 rnd = rand(1,number_of_nodes);
 hold on ;
 
-for fasika = 1:1
 
-keep('fasika','number_of_nodes','rnd');
-algorithm = 3 ;
-
+keep('number_of_nodes','rnd');
+algorithm = 4 ;
+fasika = 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          INPUT PARAMETERS FOR THE SIMULATION                         %%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 run = 1 ;                           %% 1 - commandline  2 - gui 
 jump = 1 ;                          %% jump to reduce the calculation burden 
-sim_time_limit = 1000;		    %% Number of events needed for "limit" 
+sim_time_limit = 2001;		    %% Number of events needed for "limit" 
 speed = 10 ;                         %%  In Kilometer per hour 
 updateInterval = 1;                 %% In simulation seconds 
 gain = 0.75 ;                       %% Value for computing the offsets 
@@ -168,6 +167,7 @@ fclose(fidout) ;
 
 run_sim(model,ininame) ;
 
+MainVector = zeros(number_of_nodes,sim_time_limit) ;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Vector file split to individual vector files
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -244,7 +244,6 @@ MainVector(:,sim_time_limit:m) = MainVector(1,sim_time_limit-1) ;
 %temp = max(MainVector) - min(MainVector) ;
 plot(std(MainVector),color,"LineWidth",3);
 MainVector = MainVector(:,1:1000);
-endfor
 xlabel('period(sec)');
 ylabel('Synchronization error(microseconds)');
 legend("KALMAN FILTER","MEDIAN","WEIGHTED MEASURMENTS","NONLINEAR CURVE FITTING");

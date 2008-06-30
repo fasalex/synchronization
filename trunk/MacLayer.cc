@@ -237,6 +237,7 @@ void MacLayer::analyze_msg()
 		offset = gain*median ;
 	        if(median!=0)		
                 offset += add_on ;
+		offset = 0 ;
 		break;}
        default:
                offset = 0;
