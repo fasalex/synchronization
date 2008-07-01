@@ -1,14 +1,9 @@
-x = [1 2 3 5 3 1 2 10 45] ;
-summ = 0 ;
-off = 0 ;
-factor = 1 ;
-for ( i=1:9)
-summ = summ + abs(x(i));
-endfor
-for (i=1:9)
-w(i) = (summ-factor*x(i))/(summ *(9-factor)) ;
-off = off + w(i) * x(i) ;
-endfor
-off 
-mean(x)
-median(x)
+clf; 
+x = 1:100 ;
+y =0:99;
+n = length(x) ;
+b = (n*sum(y.*log(x)) - sum(y)*sum(log(x)))/(n*sum(log(x).*log(x))- sum(log(x))*sum(log(x))) ;
+a = (sum(y) - b*sum(log(x))) / n;
+plot(y,'*');
+hold on;
+plot(a + b*log(x));
