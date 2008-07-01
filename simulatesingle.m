@@ -5,9 +5,8 @@ number_of_nodes = 20 ;
 rnd = rand(1,number_of_nodes);
 hold on ;
 
-
 keep('number_of_nodes','rnd');
-algorithm = 4 ;
+algorithm = 1 ;
 fasika = 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -15,7 +14,7 @@ fasika = 1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 run = 1 ;                           %% 1 - commandline  2 - gui 
 jump = 1 ;                          %% jump to reduce the calculation burden 
-sim_time_limit = 2001;		    %% Number of events needed for "limit" 
+sim_time_limit = 1000;		    %% Number of events needed for "limit" 
 speed = 10 ;                         %%  In Kilometer per hour 
 updateInterval = 1;                 %% In simulation seconds 
 gain = 0.75 ;                       %% Value for computing the offsets 
@@ -238,15 +237,16 @@ endif
 endfor
 fclose(fidin);
 endfor
-
+tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
 m = length(MainVector);
 MainVector(:,sim_time_limit:m) = MainVector(1,sim_time_limit-1) ;
 %temp = max(MainVector) - min(MainVector) ;
-plot(std(MainVector),color,"LineWidth",3);
+plot(std(MainVector)/30,color,"LineWidth",2);
 MainVector = MainVector(:,1:1000);
 xlabel('period(sec)');
 ylabel('Synchronization error(microseconds)');
 legend("KALMAN FILTER","MEDIAN","WEIGHTED MEASURMENTS","NONLINEAR CURVE FITTING");
+title(tit) ;
 print(filename);
 hold on ;
 disp("SIMULATION ENDED") ;

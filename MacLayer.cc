@@ -140,7 +140,7 @@ void MacLayer::analyze_msg()
 			
 			// Time update "PREDICT"
 
-			x = phi*x ;  
+			x =  phi*x ;  
 			P =  phi*P*phi + Q ;
 
 			// Measurment Update "CORRECT"
@@ -157,7 +157,7 @@ void MacLayer::analyze_msg()
 
 			P = ( 1 - (Ka * H)) * P;	
 		}
-			offset  = gain*x ;
+			offset = gain*x ;
 			if(offset !=0)
           		offset += add_on ;
                break;}
@@ -168,7 +168,7 @@ void MacLayer::analyze_msg()
                offset += add_on ;
                break;}
 
-// Weighted Measurments ..........  
+// Weighted Measurements ..........  
 
        case 3:{ 
 		offset = 0 ;
@@ -192,16 +192,6 @@ void MacLayer::analyze_msg()
 			sumcons += cons ;
 		}
 	
-	       /* if(neigh==0){offset = 0 ;}else if(neigh==1){offset = temp_varr[0];}else{
-                /*fasika =  sum * (neigh-1*factor) ;
-                for (int m=0; m < neigh; m++){
-			if(fasika !=0)
-                         weight[m] = (sum - factor*temp_varr[m]) / fasika ;
-			else 
-			 weight[m] = 0 ;
-
-                         offset = offset + (temp_varr[m] * weight[m]) ;
-                }}*/
 		if(sumcons!=0){
 		offset = sum / sumcons ;
 		offset = offset * gain ;
@@ -215,29 +205,28 @@ void MacLayer::analyze_msg()
 		double ga = 30*1e-6 ;
 		if(count == 0)
 			offset = 0 ;
-		else if(count == 1)
+		else if(count == 1){
 		    offset = temp_varr[0]/ 2 ;
-		else{
+		    offset = offset * gain ;
+		    offset += add_on ;
+		}else{
 			for(int i = 0;i<count;i++){
-				sum += temp_varr[i]/ga;
-				sumlog += 0.4*(double)(i+1);
-				sumprod += (temp_varr[i]/ga)*0.4*(double)(i+1);
-				sumsq += 0.16*(double)(i+1)*(double)(i+1);
+				double h  = (double)(i+1) ;
+				sum += temp_varr[i];
+				sumlog += log(h);
+				sumprod += (temp_varr[i])*log(h);
+				sumsq += log(h)*log(h);
 			}
 			double control = count*sumsq - sumlog*sumlog ;
 			if(control!=0){
-			b = (count*sumprod - sum*sumlog)/control;
-			a = (sum - b*sumlog)/count;
-			offset = a + b*log((double)(count/2 + 1));}
-			else offset = 0 ;
-			offset = offset * ga ;
+				b = (count*sumprod - sum*sumlog)/control;
+				a = (sum - b*sumlog)/count;
+				offset = a + b*log((double)(count/2));
+				offset += add_on ;
+			}else 
+				offset = 0 ;
+			
 		}
-		offset = offset * gain ;
-		offset  += add_on ;
-		offset = gain*median ;
-	        if(median!=0)		
-                offset += add_on ;
-		offset = 0 ;
 		break;}
        default:
                offset = 0;

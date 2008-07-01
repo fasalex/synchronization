@@ -1,5 +1,5 @@
 %%%% The begining of the end !!!!!!!!!!
-iter = 1 ;
+iter = 1;
 finalvec = zeros(iter,1000);
 figure ;
 for master=1:iter 
@@ -22,7 +22,7 @@ algorithm = fasika  ;
 run = 1 ;                           %% 1 - commandline  2 - gui 
 jump = 1 ;                          %% jump to reduce the calculation burden 
 sim_time_limit = 1000;		    %% Number of events needed for "limit" 
-speed = 20;                        %%  In Kilometer per hour 
+speed = 100 ;                        %%  In Kilometer per hour 
 updateInterval = 1;                 %% In simulation seconds 
 gain = 0.75 ;                       %% Value for computing the offsets 
 express = "yes" ;                   %% Enable or Disable express mode 
@@ -268,10 +268,22 @@ plot(kalman, 'b','LineWidth',2);
 plot(med, 'r','LineWidth',2);
 plot(weight, 'c','LineWidth',2);
 plot(curvefit, 'm','LineWidth',2);
-
+tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
 xlabel('period(sec)');
 ylabel('Synchronization error(clock cycles)');
 legend("KALMAN FILTER","MEDIAN","WEIGHTED MEASURMENTS","NONLINEAR CURVE FITTING");
+title(tit);
 hold on ;
-
 print(filename) ;
+%% Perform comparisons Numerically
+K = (kalman - med)./med ;
+W = (weight - med)./med ;
+NLCF = (curvefit - med) ./med ;
+disp("Kalman");
+mean(K)*100
+disp("Weighted Measurments");
+mean(W)*100
+disp("Curve fit");
+mean(NLCF)*100
+figure ;
+plot(K,W,NLCF) ;
