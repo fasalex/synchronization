@@ -1,7 +1,7 @@
 clf ;
 system("rm *.vec");
 system("rm *.sca");
-number_of_nodes = 20 ;
+number_of_nodes = 50 ;
 rnd = rand(1,number_of_nodes);
 hold on ;
 
@@ -15,7 +15,7 @@ fasika = 1;
 run = 1 ;                           %% 1 - commandline  2 - gui 
 jump = 1 ;                          %% jump to reduce the calculation burden 
 sim_time_limit = 1000;		    %% Number of events needed for "limit" 
-speed = 10 ;                         %%  In Kilometer per hour 
+speed = 0 ;                         %%  In Kilometer per hour 
 updateInterval = 1;                 %% In simulation seconds 
 gain = 0.75 ;                       %% Value for computing the offsets 
 express = "yes" ;                   %% Enable or Disable express mode 
@@ -63,6 +63,7 @@ ext = '.eps';
 filename = strcat(prefix,'s',ra,spe,'-g',gai,'-n',no,'-alpha',alp,ext);
 
 playgroundSizeX =  (sqrt(number_of_nodes) + 1)*100 ;	    %% meters
+playgroundSizeX = 500 ;
 playgroundSizeY =  playgroundSizeX ;            %% meters
 
 fidout = fopen(ininame, "w", "native");
@@ -135,13 +136,13 @@ fprintf(fidout, "mobileNet.Node[*].mobility.acceleration = 2 \n");
 i=0;
 j=0;
 squ = sqrt(number_of_nodes) ;
+spac = playgroundSizeX / (squ+1) ;
 squ = int8(squ) ;
-
 for(m=0:squ)
 while((j<squ) && ( i < number_of_nodes))
-x(i+1) = 100 + j*100 ;
+x(i+1) = spac + j*spac ;
 fprintf(fidout, "mobileNet.Node[%d].mobility.x = %f\n",i,x(i+1));
-y(i+1) = 100 + m*100 ;
+y(i+1) = spac + m*spac;
 fprintf(fidout, "mobileNet.Node[%d].mobility.y = %f\n",i,y(i+1));
 z(i+1) = i ;
 fprintf(fidout, "mobileNet.Node[%d].mobility.z = 0\n",z(i+1));
@@ -244,7 +245,7 @@ MainVector(:,sim_time_limit:m) = MainVector(1,sim_time_limit-1) ;
 plot(std(MainVector)/30,color,"LineWidth",2);
 MainVector = MainVector(:,1:1000);
 xlabel('period(sec)');
-ylabel('Synchronization error(microseconds)');
+ylabel('Synchronization error(clock cycles)');
 legend("KALMAN FILTER","MEDIAN","WEIGHTED MEASURMENTS","NONLINEAR CURVE FITTING");
 title(tit) ;
 print(filename);

@@ -1,5 +1,5 @@
 %%%% The begining of the end !!!!!!!!!!
-iter = 1;
+iter = 2;
 finalvec = zeros(iter,1000);
 figure ;
 for master=1:iter 
@@ -9,7 +9,7 @@ clf ;
 system("rm *.vec");
 system("rm *.sca");
 
-number_of_nodes = 20 ;
+number_of_nodes = 16 ;
 rnd = rand(1,number_of_nodes);
 hold on ;
 for fasika = 1:4
@@ -22,12 +22,13 @@ algorithm = fasika  ;
 run = 1 ;                           %% 1 - commandline  2 - gui 
 jump = 1 ;                          %% jump to reduce the calculation burden 
 sim_time_limit = 1000;		    %% Number of events needed for "limit" 
-speed = 100 ;                        %%  In Kilometer per hour 
+speed = 5.4 ;   
+speed = speed + rnd(1) ;            %%  In Kilometer per hour 
 updateInterval = 1;                 %% In simulation seconds 
 gain = 0.75 ;                       %% Value for computing the offsets 
 express = "yes" ;                   %% Enable or Disable express mode 
 alpha = 2.5 ;                       %% Channel factor - attenuation if you might say ...
-playgroundSizeX =  (sqrt(number_of_nodes) + 1)*100 ;	    %% meters
+playgroundSizeX = 500 ;
 playgroundSizeY =  playgroundSizeX ;            %% meters
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          END OF PARAMETERS , OUT                                     %%%%%%%%%%%%%%
@@ -141,12 +142,13 @@ fprintf(fidout, "mobileNet.Node[*].mobility.acceleration = 2 \n");
 i=0;
 j=0;
 squ = sqrt(number_of_nodes) ;
+spac = playgroundSizeX / (1 + squ) ;
 squ = int8(squ) ;
 for(m=0:squ)
 while((j<squ) && ( i < number_of_nodes))
-x(i+1) = 100 + j*100 ;
+x(i+1) = spac + j*spac ;
 fprintf(fidout, "mobileNet.Node[%d].mobility.x = %f\n",i,x(i+1));
-y(i+1) = 100 + m*100 ;
+y(i+1) = spac + m*spac ;
 fprintf(fidout, "mobileNet.Node[%d].mobility.y = %f\n",i,y(i+1));
 z(i+1) = i ;
 fprintf(fidout, "mobileNet.Node[%d].mobility.z = 0\n",z(i+1));
@@ -273,17 +275,21 @@ xlabel('period(sec)');
 ylabel('Synchronization error(clock cycles)');
 legend("KALMAN FILTER","MEDIAN","WEIGHTED MEASURMENTS","NONLINEAR CURVE FITTING");
 title(tit);
-hold on ;
 print(filename) ;
+clf;
 %% Perform comparisons Numerically
-K = (kalman - med)./med ;
-W = (weight - med)./med ;
-NLCF = (curvefit - med) ./med ;
-disp("Kalman");
-mean(K)*100
-disp("Weighted Measurments");
-mean(W)*100
-disp("Curve fit");
-mean(NLCF)*100
-figure ;
-plot(K,W,NLCF) ;
+med(find(med<=1)) = 1 ;
+K = abs(med - kalman)*100./ med ;
+W = abs(med - weight)*100./ med ;
+NLCF = abs(med - curvefit)*100./med ;
+hold on ;
+filename = strcat(prefix,'s',ra,spe,'-g',gai,'-n',no,'-alpha',alp,' Error',ext);
+plot(K,'b','LineWidth',2);
+plot(W,'c','LineWidth',2);
+plot(NLCF,'m','LineWidth',2) ;
+xlabel('period(sec)') ;
+ylabel('Percentage Performance Improvment over Median(%)');
+legend("KALMAN FILTER","WEIGHTED MEASURMENTS","NONLINEAR CURVE FITTING");
+title('Percentage performance improvment compared to Median algorithm(%)');
+print(filename) ;
+disp("Euffffffffff");
