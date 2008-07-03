@@ -1,5 +1,5 @@
 %%%% The begining of the end !!!!!!!!!!
-iter = 2;
+iter = 1;
 finalvec = zeros(iter,1000);
 figure ;
 for master=1:iter 
