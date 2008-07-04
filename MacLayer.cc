@@ -19,9 +19,7 @@ void MacLayer::initialize(int stage) {
        
        if(stage == 0) {
                myIndex = parentModule()->par("id") ;
-               Period = 0 ;
                count = 0;
-               Period = 0 ;
                Ref = 0 ;
                dataOut = findGate("lowerGateOut");
                dataIn = findGate("lowerGateIn");
@@ -37,8 +35,8 @@ void MacLayer::initialize(int stage) {
                scheduleAt(broadcast_time, pkt);
 
                cMessage *ctrl = new cMessage("Control Message");
-               Ref = broadcast_time + 0.5*frequency ;
-               Period++ ;
+//               Ref = broadcast_time + 0.5*frequency ;
+               Ref = broadcast_time + 0.01;
                ctrl->setKind(CONTROL_MESSAGE);
                scheduleAt(Ref,ctrl);
        }
@@ -50,16 +48,16 @@ void MacLayer::handleMessage(cMessage* msg) {
                output_vec.record(broadcast_time*1000000) ;
                sendDown(msg);
        }
-       else if ( msg->kind() == CONTROL_MESSAGE){
+       else if (msg->kind() == CONTROL_MESSAGE){
                logg("Control Message Received - Updating the period ...") ;
                analyze_msg();
                delete msg;
-       }else{  
+       }else if(simTime() > broadcast_time){  
                logg("Collecting the offsets from Neighbours ....");
-//               if(dblrand() > 0.5)
                collect_data(msg);
                delete msg ;
-       }
+       }else
+		delete msg ;
 }
 void MacLayer::sendDown(cMessage *pkt)
 {
@@ -78,7 +76,6 @@ void MacLayer::analyze_msg()
 {      
        logg("Adjusting the offset of ") ;
        int neigh = count;
-       double total = 0 ;
        double median = 0;
        double add_on ;
 
@@ -90,7 +87,6 @@ void MacLayer::analyze_msg()
                                        temp_varr[y] = temp;
                                }
                }
-               total = total + temp_varr[x] ;
        }
 
 
@@ -115,7 +111,6 @@ void MacLayer::analyze_msg()
        case 1:{
 
 // Kalman filter .....
-
                	double x;   // estimated value of the variable to be considered 
 		double phi; // coefficient to bla bla the previous estimate in it
 		double H;   // adjustment matrix
@@ -133,9 +128,7 @@ void MacLayer::analyze_msg()
 		R = 1e-6;
 		H = 1;
 		phi = 1;
-
 		// Loop 
-
 		for(int i=0;i<neigh;i++){
 			
 			// Time update "PREDICT"
@@ -200,7 +193,9 @@ void MacLayer::analyze_msg()
 		offset = 0 ;
 		break;}
        case 4:{
+
 // Non-linear least square curve fitting 
+
 		double a,b, sum, sumlog, sumprod, sumsq = 0 ;
 		double ga = 30*1e-6 ;
 		if(count == 0)
@@ -234,13 +229,13 @@ void MacLayer::analyze_msg()
        }
 
        broadcast_time = broadcast_time - offset + frequency ;
-       Ref = Ref - offset + frequency ;
+//       Ref = Ref - offset + frequency ;
+       Ref = broadcast_time + 0.01  ;
 
        MacPkt* pkt = createMacPkt(frame_length);
        scheduleAt(broadcast_time,pkt) ;
 
        cMessage *ctrl = new cMessage("Control Message");
-       Period++;
        ctrl->setKind(CONTROL_MESSAGE);
        scheduleAt(Ref,ctrl);
 

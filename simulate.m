@@ -1,7 +1,7 @@
 %%%% The begining of the end !!!!!!!!!!
-iter = 1;
+iter = 1 ;
 finalvec = zeros(iter,1000);
-figure ;
+clf;
 for master=1:iter 
 keep('master','finalvec','iter');
 clf ;
@@ -14,7 +14,7 @@ rnd = rand(1,number_of_nodes);
 hold on ;
 for fasika = 1:4
 keep('fasika','number_of_nodes','rnd','master','finalvec','iter');
-algorithm = fasika  ;
+algorithm = fasika   ;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          INPUT PARAMETERS FOR THE SIMULATION                         %%%%%%%%%%%%%%
@@ -22,18 +22,18 @@ algorithm = fasika  ;
 run = 1 ;                           %% 1 - commandline  2 - gui 
 jump = 1 ;                          %% jump to reduce the calculation burden 
 sim_time_limit = 1000;		    %% Number of events needed for "limit" 
-speed = 5.4 ;   
+speed = 20 ;   
 speed = speed + rnd(1) ;            %%  In Kilometer per hour 
 updateInterval = 1;                 %% In simulation seconds 
 gain = 0.75 ;                       %% Value for computing the offsets 
 express = "yes" ;                   %% Enable or Disable express mode 
 alpha = 2.5 ;                       %% Channel factor - attenuation if you might say ...
-playgroundSizeX = 500 ;
+playgroundSizeX = 300 ;
 playgroundSizeY =  playgroundSizeX ;            %% meters
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          END OF PARAMETERS , OUT                                     %%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 if (fasika == 1)
 color = 'b' ;
 elseif(fasika == 2 )
@@ -271,9 +271,11 @@ plot(med, 'r','LineWidth',2);
 plot(weight, 'c','LineWidth',2);
 plot(curvefit, 'm','LineWidth',2);
 tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
+%tit = strcat('Synchronization error for ',no,' nodes with different gain factros - Median');
 xlabel('period(sec)');
 ylabel('Synchronization error(clock cycles)');
 legend("KALMAN FILTER","MEDIAN","WEIGHTED MEASURMENTS","NONLINEAR CURVE FITTING");
+%legend("0.25","0.5","0.75","1.0");
 title(tit);
 print(filename) ;
 clf;
@@ -290,6 +292,6 @@ plot(NLCF,'m','LineWidth',2) ;
 xlabel('period(sec)') ;
 ylabel('Percentage Performance Improvment over Median(%)');
 legend("KALMAN FILTER","WEIGHTED MEASURMENTS","NONLINEAR CURVE FITTING");
-title('Percentage performance improvment compared to Median algorithm(%)');
+title('Percentage performance improvement compared to Median algorithm(%)');
 print(filename) ;
 disp("Euffffffffff");

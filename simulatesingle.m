@@ -1,12 +1,12 @@
 clf ;
 system("rm *.vec");
 system("rm *.sca");
-number_of_nodes = 50 ;
+number_of_nodes = 16 ;
 rnd = rand(1,number_of_nodes);
 hold on ;
 
 keep('number_of_nodes','rnd');
-algorithm = 1 ;
+algorithm = 2 ;
 fasika = 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
