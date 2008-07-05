@@ -1,5 +1,5 @@
 %%%% The begining of the end !!!!!!!!!!
-iter = 1 ;
+iter = 5 ;
 finalvec = zeros(iter,1000);
 clf;
 for master=1:iter 
@@ -9,7 +9,7 @@ clf ;
 system("rm *.vec");
 system("rm *.sca");
 
-number_of_nodes = 16 ;
+number_of_nodes = 50 ;
 rnd = rand(1,number_of_nodes);
 hold on ;
 for fasika = 1:4
@@ -22,13 +22,13 @@ algorithm = fasika   ;
 run = 1 ;                           %% 1 - commandline  2 - gui 
 jump = 1 ;                          %% jump to reduce the calculation burden 
 sim_time_limit = 1000;		    %% Number of events needed for "limit" 
-speed = 20 ;   
+speed = 5.4;   
 speed = speed + rnd(1) ;            %%  In Kilometer per hour 
 updateInterval = 1;                 %% In simulation seconds 
 gain = 0.75 ;                       %% Value for computing the offsets 
 express = "yes" ;                   %% Enable or Disable express mode 
 alpha = 2.5 ;                       %% Channel factor - attenuation if you might say ...
-playgroundSizeX = 300 ;
+playgroundSizeX = 500 ;
 playgroundSizeY =  playgroundSizeX ;            %% meters
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
