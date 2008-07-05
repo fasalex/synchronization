@@ -24,7 +24,7 @@ module Network
         Node: Host[numHosts]; 
             parameters: 
                 numHosts = numHosts; 
-            display: "p=50,50;b=22,22,rect;o=red;i=device/palm";
+            display: "i=device/palm;is=vs";
     connections nocheck: 
                          // all connections and gates are to be generated dynamically
                          
