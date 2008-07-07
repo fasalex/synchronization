@@ -28,7 +28,7 @@ module Network
     connections nocheck: 
                          // all connections and gates are to be generated dynamically
                          
-    display: "p=10,50;b=$playgroundSizeX,$playgroundSizeY,rect;o=white";
+    display: "b=$playgroundSizeX,$playgroundSizeY,rect;o=white";
 endmodule 
 
 network mobileNet : Network

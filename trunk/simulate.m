@@ -1,20 +1,21 @@
 %%%% The begining of the end !!!!!!!!!!
-iter = 5 ;
+for s=1:3
+iter = 1 ;
 finalvec = zeros(iter,1000);
 clf;
 for master=1:iter 
-keep('master','finalvec','iter');
+keep('master','finalvec','iter','s');
 clf ;
 
 system("rm *.vec");
 system("rm *.sca");
 
-number_of_nodes = 50 ;
+number_of_nodes = 16 ;
 rnd = rand(1,number_of_nodes);
 hold on ;
 for fasika = 1:4
-keep('fasika','number_of_nodes','rnd','master','finalvec','iter');
-algorithm = fasika   ;
+keep('fasika','number_of_nodes','rnd','master','finalvec','iter','s');
+algorithm = fasika  ;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          INPUT PARAMETERS FOR THE SIMULATION                         %%%%%%%%%%%%%%
@@ -22,13 +23,18 @@ algorithm = fasika   ;
 run = 1 ;                           %% 1 - commandline  2 - gui 
 jump = 1 ;                          %% jump to reduce the calculation burden 
 sim_time_limit = 1000;		    %% Number of events needed for "limit" 
-speed = 5.4;   
-speed = speed + rnd(1) ;            %%  In Kilometer per hour 
 updateInterval = 1;                 %% In simulation seconds 
+if(s==1) 
+speed = 0 ;
+elseif(s==2)
+speed = 5.4 ;   
+elseif(s==3)
+speed = 20 ;
+endif
 gain = 0.75 ;                       %% Value for computing the offsets 
 express = "yes" ;                   %% Enable or Disable express mode 
-alpha = 2.5 ;                       %% Channel factor - attenuation if you might say ...
-playgroundSizeX = 500 ;
+alpha = 2.75 ;                       %% Channel factor - attenuation if you might say ...
+playgroundSizeX = sqrt(number_of_nodes)*30 + 60; % The distance between the nodes is at max 30 meters 
 playgroundSizeY =  playgroundSizeX ;            %% meters
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -70,7 +76,7 @@ no = int2str(number_of_nodes);
 ra = int2str(rand()*1000 );
 alp = int2str(alpha*100);
 ext = '.eps';
-filename = strcat(prefix,'s',ra,spe,'-g',gai,'-n',no,'-alpha',alp,ext);
+filename = strcat(prefix,ra,'s',spe,'-g',gai,'-n',no,'-alpha',alp,ext);
 
 fidout = fopen(ininame, "w", "native");
 fprintf(fidout, "[General]\n");
@@ -285,7 +291,7 @@ K = abs(med - kalman)*100./ med ;
 W = abs(med - weight)*100./ med ;
 NLCF = abs(med - curvefit)*100./med ;
 hold on ;
-filename = strcat(prefix,'s',ra,spe,'-g',gai,'-n',no,'-alpha',alp,' Error',ext);
+filename = strcat(prefix,ra,'s',spe,'-g',gai,'-n',no,'-alpha',alp,' Error',ext);
 plot(K,'b','LineWidth',2);
 plot(W,'c','LineWidth',2);
 plot(NLCF,'m','LineWidth',2) ;
@@ -294,4 +300,5 @@ ylabel('Percentage Performance Improvment over Median(%)');
 legend("KALMAN FILTER","WEIGHTED MEASURMENTS","NONLINEAR CURVE FITTING");
 title('Percentage performance improvement compared to Median algorithm(%)');
 print(filename) ;
+endfor
 disp("Euffffffffff");

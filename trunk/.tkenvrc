@@ -37,7 +37,7 @@ config last-nedfile	{}
 config log-save-filename	{omnetpp.out}
 config logwindow-scrollbacklines	{100000}
 config mainwin-geom	{1280x915+4+49}
-config mainwin-state	{normal}
+config mainwin-state	{iconic}
 config rununtil-event	{}
 config rununtil-mode	{Express (tracing off)}
 config rununtil-time	{6000000}
