@@ -23,6 +23,6 @@ module Host
 
 		radioIn --> normalNic.radioIn;
 
-    display: "p=10,10;b=180,200,rect;o=white";
+    display: "p=10,10;b=180,200,rect;o=red";
 endmodule
 
