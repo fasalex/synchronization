@@ -229,7 +229,6 @@ void MacLayer::analyze_msg()
        }
 
        broadcast_time = broadcast_time - offset + frequency ;
-//       Ref = Ref - offset + frequency ;
        Ref = broadcast_time + 0.01  ;
 
        MacPkt* pkt = createMacPkt(frame_length);

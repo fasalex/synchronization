@@ -10,7 +10,7 @@ clf ;
 system("rm *.vec");
 system("rm *.sca");
 
-number_of_nodes = 16 ;
+number_of_nodes = 50 ;
 rnd = rand(1,number_of_nodes);
 hold on ;
 for fasika = 1:4
@@ -24,7 +24,7 @@ run = 1 ;                           %% 1 - commandline  2 - gui
 jump = 1 ;                          %% jump to reduce the calculation burden 
 sim_time_limit = 1000;		    %% Number of events needed for "limit" 
 updateInterval = 1;                 %% In simulation seconds 
-if(s==1) 
+if(s==1) 			    %% Speed of the nodes , random in a sense that 
 speed = 0 ;
 elseif(s==2)
 speed = 5.4 ;   
@@ -33,8 +33,8 @@ speed = 20 ;
 endif
 gain = 0.75 ;                       %% Value for computing the offsets 
 express = "yes" ;                   %% Enable or Disable express mode 
-alpha = 2.75 ;                       %% Channel factor - attenuation if you might say ...
-playgroundSizeX = sqrt(number_of_nodes)*30 + 60; % The distance between the nodes is at max 30 meters 
+alpha =2.5;                       %% Channel factor - attenuation if you might say ...
+playgroundSizeX = (sqrt(number_of_nodes)+1)*30; % The distance between the nodes is at max 30 meters 
 playgroundSizeY =  playgroundSizeX ;            %% meters
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -112,7 +112,7 @@ fprintf(fidout, "# Channel Parameters #\n");
 fprintf(fidout, "##############################\n");
 fprintf(fidout, "mobileNet.Channel.coreDebug = 0\n");
 fprintf(fidout, "mobileNet.Channel.sendDirect = 0\n");
-fprintf(fidout, "mobileNet.Channel.pMax = 20\n");
+fprintf(fidout, "mobileNet.Channel.pMax = 4\n");
 fprintf(fidout, "mobileNet.Channel.sat = -82\n");
 fprintf(fidout, "mobileNet.Channel.alpha = %f\n",alpha);
 fprintf(fidout, "mobileNet.Channel.carrierFrequency = 2.45e+9\n\n");
@@ -277,7 +277,6 @@ plot(med, 'r','LineWidth',2);
 plot(weight, 'c','LineWidth',2);
 plot(curvefit, 'm','LineWidth',2);
 tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
-%tit = strcat('Synchronization error for ',no,' nodes with different gain factros - Median');
 xlabel('period(sec)');
 ylabel('Synchronization error(clock cycles)');
 legend("KALMAN FILTER","MEDIAN","WEIGHTED MEASURMENTS","NONLINEAR CURVE FITTING");
