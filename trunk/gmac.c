@@ -1,29 +1,52 @@
-/* hello.c: display a message on the screen */
+/*
+ ****************************************************************************************************
+ *           Copyright (C)  2008 Chess, Haarlem, the Netherlands.  All rights reserved.             *
+ ****************************************************************************************************
+ * 
+ * Version: $Id: gMacSynchronize.c,v 1.10 2008/04/24 15:59:17 frits Exp $
+ */
+ 
+/**
+ * \brief Frame synchronisation algorithm for gMac
+ * 
+ * \par Description
+ * At the end of the active period (the period in which the TDMA slots are scheduled)
+ * of a frame, the MyriaCore scheduler will call the gMacSynchronize() function.
+ * 
+ * \par Order of execution
+ * The gMacTdmaStrategy() will be called first, then the gMacSynchronize() function.
+ * This is important when acessing and updating variables in the gMacFram structure!
+ *
+ * \author
+ *      Chess B.V. - Innovation Team (Frits van der Wateren)
+ */
 
-#include <stdio.h>
+#include <stdlib.h>
 
 //#define KALMAN_FILTER
 //#define CURVE_FITTING
-#define WEIGHT_MEASURMENT
-//#define MEDIAN
+//#define WEIGHT_MEASURMENT
+#define MEDIAN
 /**
  * \brief Perform the slot and phase synchronization algorithm.
  */
-main() {
-   int i, n, nNeighbours;
+void gMacSynchronize(void) {
+    
+
+
+    unsigned char i, n, nNeighbours;
     int slotError;
     int phaseError;
     int nbSlotOffset;
     int tmp;
     int lastFrameSlot = 2 ;
     int SLOT_TIME = 10 ;
-    nNeighbours = 100000;
-    int totalError[nNeighbours];
-    int medianerror;
-    int kalmanerror ; 
+    nNeighbours = 8;
+    
+      
 
 #ifdef MEDIAN
-printf("This is Median.....Get over it\n") ;
+
 // Median synchronization algorithm: 
 
  if (nNeighbours <= 2) {
@@ -45,16 +68,16 @@ printf("This is Median.....Get over it\n") ;
             slotError  = nbSlotOffset;
         }
           
-           
-            medianerror = slotError * SLOT_TIME + phaseError;
-            medianerror = medianerror + phaseError;            // Gain = 0.5
-            slotError  = medianerror /SLOT_TIME;
-            phaseError = medianerror % SLOT_TIME;
+            int totalError;
+            totalError = slotError * SLOT_TIME + phaseError;
+            totalError = totalError/2 + phaseError/4;            // Gain = 0.5
+            slotError  = totalError /SLOT_TIME;
+            phaseError = totalError % SLOT_TIME;
 #endif 
 
 
 #ifdef KALMAN_FILTER 
-printf("Welcome to Kalman Filter ...Hope U will like your stay here\n") ;
+
 // Application of the Kalman filter to the synchronization of Nodes
 
         if (nNeighbours > 1) {
@@ -67,7 +90,7 @@ printf("Welcome to Kalman Filter ...Hope U will like your stay here\n") ;
 	         }
            }
         }
-
+	int totalError ; 
 	int x;    // estimated value of the variable to be considered 
 	int phi ; // prediction factor 
 	int R;    // noise covariance
@@ -89,7 +112,7 @@ printf("Welcome to Kalman Filter ...Hope U will like your stay here\n") ;
 
 	for(i=0; i<nNeighbours; i++) {
 			
-			kalmanerror = nbSlotOffset *SLOT_TIME + phaseError ;
+			totalError = nbSlotOffset *SLOT_TIME + phaseError ;
 			
 			// Time update "PREDICT"
 
@@ -104,11 +127,10 @@ printf("Welcome to Kalman Filter ...Hope U will like your stay here\n") ;
 
 			// update estimate with measurement
 			
-			x = x + Ka * (kalmanerror - (H * x) );
+			x = x + Ka * (totalError - (H * x) );
 			// update the error covariance
 
 			P = ( 1 - (Ka * H)) * P;	
-
 	}
 
 	phaseError = x % SLOT_TIME;
@@ -117,13 +139,14 @@ printf("Welcome to Kalman Filter ...Hope U will like your stay here\n") ;
 
 
 #ifdef WEIGHT_MEASURMENT
-printf("How much WEIGHT do u want ?\n") ;
+
 // Application of Weighted approach to the synchronization of Nodes
 
 	int maxx = 0;
 	int temp ;
-        int weight[nNeighbours];
-        int summ = 0 ;
+        int weight[5];
+        int sum = 0 ;
+	int totalError[5] ;
 	float cons ;
 
 	for (i=0; i<nNeighbours; i++) {
@@ -138,14 +161,13 @@ printf("How much WEIGHT do u want ?\n") ;
 			cons = 0.5;
 		totalError[i]= totalError[i] * cons ;
 
-        	summ = summ + totalError[i] ;
-		printf("Weight %d \n",i);
+        	sum = sum + totalError[i] ;
         }
                
-        temp = summ * (nNeighbours - 1) ;
+        temp = sum * (nNeighbours - 1) ;
 	for (i=0; i<nNeighbours; i++) {
 		if (temp !=0)
-        		weight[i] = (summ - totalError[i]) / temp ;
+        		weight[i] = (sum - totalError[i]) / temp ;
 		else 
 	    		weight[i] = 0 ;
 	
@@ -158,7 +180,7 @@ printf("How much WEIGHT do u want ?\n") ;
         
 
 #ifdef CURVE_FITTING
-printf("I am curved in irregular manner....what shall I do ?\n") ;
+
 // Application of CURVE_FITTING 
 
 	       int sum =0 ;
@@ -167,17 +189,17 @@ printf("I am curved in irregular manner....what shall I do ?\n") ;
 	       int sumy = 0;
                int cmp = 1 ;
 	       int k ;
+	       int totalError[10] ;
                for(k=0 ; k<nNeighbours ; k++){
 		       totalError[k] = nbSlotOffset *SLOT_TIME + phaseError ;
 		       sumy += (totalError[k] + 1);
                        sum += 0.4*k;
                        sumsq += 0.16*k*k;
                        sumprod += (totalError[k]+cmp) * 0.4*k;   
-
                }          
                int b = (nNeighbours*sumprod - sumy*sum)/(nNeighbours*sumsq - (sum*sum));
                int a = (sumy - b*sum) / nNeighbours ;
-               int tempp = a + b*0.4*(nNeighbours/2) ;
+               int temp = a + b*0.4*(nNeighbours/2) ;
 	       phaseError =  temp%SLOT_TIME;
 	       slotError = temp/SLOT_TIME;
  	       
