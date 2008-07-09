@@ -1,5 +1,5 @@
 %%%% The begining of the end !!!!!!!!!!
-for s=1:3
+for s=1:1
 iter = 1 ;
 finalvec = zeros(iter,1000);
 clf;
@@ -10,7 +10,7 @@ clf ;
 system("rm *.vec");
 system("rm *.sca");
 
-number_of_nodes = 50 ;
+number_of_nodes = 16 ;
 rnd = rand(1,number_of_nodes);
 hold on ;
 for fasika = 1:4
@@ -35,6 +35,7 @@ gain = 0.75 ;                       %% Value for computing the offsets
 express = "yes" ;                   %% Enable or Disable express mode 
 alpha =2.5;                       %% Channel factor - attenuation if you might say ...
 playgroundSizeX = (sqrt(number_of_nodes)+1)*30; % The distance between the nodes is at max 30 meters 
+%%playgroundSizeX = 300 ;
 playgroundSizeY =  playgroundSizeX ;            %% meters
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -43,11 +44,11 @@ playgroundSizeY =  playgroundSizeX ;            %% meters
 if (fasika == 1)
 color = 'b' ;
 elseif(fasika == 2 )
-color = 'r';
+color = '.';
 elseif(fasika == 3)
-color = 'g';
+color = '+';
 elseif(fasika == 4)
-color = 'm';
+color = 'o';
 elseif(fasika == 5)
 color = 'c';
 elseif(fasika == 6)
@@ -144,7 +145,7 @@ fprintf(fidout, "##############################\n");
 fprintf(fidout, "mobileNet.Node[*].normalNic.connectionManagerName = \"Channel\"\n");
 fprintf(fidout, "mobileNet.Node[*].mobility.angle = 2\n");
 fprintf(fidout, "mobileNet.Node[*].mobility.acceleration = 2 \n");
-
+speed = speed * (1/3.6) ;
 i=0;
 j=0;
 squ = sqrt(number_of_nodes) ;
@@ -160,17 +161,15 @@ z(i+1) = i ;
 fprintf(fidout, "mobileNet.Node[%d].mobility.z = 0\n",z(i+1));
 fprintf(fidout, "mobileNet.Node[%d].normalNic.id = %d\n", i, i );
 fprintf(fidout, "mobileNet.Node[%d].normalNic.start_time = %f \n",i, rnd(i+1));
+fprintf(fidout, "mobileNet.Node[%d].mobility.speed= %f\n",i, 20*rand());
+fprintf(fidout, "mobileNet.Node[%d].mobility.updateInterval= %f\n",i, updateInterval);
+fprintf(fidout, "mobileNet.Node[%d].mobility.debug = 0 \n\n",i);
 j=j+1;
 i=i+1;
 endwhile
 j=0;
 endfor
 
-%%% Changing to simulation speed
-speed = speed * (1/3.6) ;
-fprintf(fidout, "mobileNet.Node[*].mobility.speed= %f\n", speed);
-fprintf(fidout, "mobileNet.Node[*].mobility.updateInterval= %f\n", updateInterval);
-fprintf(fidout, "mobileNet.Node[*].mobility.debug = 0 \n\n");
 fclose(fidout) ;
 
 %%
@@ -250,7 +249,7 @@ endfor
 fclose(fidin);
 endfor
 %% START EXTRACTING THE VECTOR FORM THE FILE 
-finalvec((master-1)*4 + fasika,:) = std(MainVector(:,1:1000)/30) ;
+finalvec((master-1)*4 + fasika,:) = max(MainVector(:,1:1000)/30)-min(MainVector(:,1:1000)/30) ;
 endfor
 endfor 
 
@@ -272,9 +271,9 @@ weight = weight / iter ;
 curvefit = curvefit / iter ;
 %% PLOT THE DAMN AVERAGED GRAPHS FROM THE VARIABLES
 hold on ;
-plot(kalman, 'b','LineWidth',2);
-plot(med, 'r','LineWidth',2);
-plot(weight, 'c','LineWidth',2);
+plot(kalman, '+','LineWidth',2);
+plot(med, '.','LineWidth',2);
+plot(weight, 'o','LineWidth',2);
 plot(curvefit, 'm','LineWidth',2);
 tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
 xlabel('period(sec)');

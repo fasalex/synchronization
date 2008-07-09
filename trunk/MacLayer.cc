@@ -52,7 +52,7 @@ void MacLayer::handleMessage(cMessage* msg) {
                logg("Control Message Received - Updating the period ...") ;
                analyze_msg();
                delete msg;
-       }else if(simTime() > broadcast_time){  
+       }else if((simTime() > broadcast_time) && (count <=9)){  
                logg("Collecting the offsets from Neighbours ....");
                collect_data(msg);
                delete msg ;
