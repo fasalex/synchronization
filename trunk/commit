@@ -5,3 +5,7 @@ svn add *
 cd ..
 svn add *
 svn commit -m ""
+cd /home/fasika/Desktop/Report
+rm *~
+svn add *
+svn commit -m ""
