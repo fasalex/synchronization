@@ -89,7 +89,6 @@ void MacLayer::analyze_msg()
                }
        }
 
-
        if(neigh!=0)
        add_on = temp_varr[0] ;
        else 
@@ -197,7 +196,6 @@ void MacLayer::analyze_msg()
 // Non-linear least square curve fitting 
 
 		double a,b, sum, sumlog, sumprod, sumsq = 0 ;
-		double ga = 30*1e-6 ;
 		if(count == 0)
 			offset = 0 ;
 		else if(count == 1){
