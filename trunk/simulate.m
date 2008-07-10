@@ -249,7 +249,7 @@ endfor
 fclose(fidin);
 endfor
 %% START EXTRACTING THE VECTOR FORM THE FILE 
-finalvec((master-1)*4 + fasika,:) = max(MainVector(:,1:1000)/30)-min(MainVector(:,1:1000)/30) ;
+finalvec((master-1)*4 + fasika,:) = uint8(max(MainVector(:,1:1000)/30)-min(MainVector(:,1:1000)/30)) ;
 endfor
 endfor 
 

@@ -1,0 +1,7 @@
+#/usr/bin bash 
+rm *.vec *.sca *~ 
+cd graphs
+svn add *
+cd ..
+svn add *
+svn commit -m ""
