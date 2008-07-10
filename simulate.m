@@ -1,6 +1,6 @@
 %%%% The begining of the end !!!!!!!!!!
-for s=1:1
-iter = 1 ;
+for s=1:3
+iter = 5 ;
 finalvec = zeros(iter,1000);
 clf;
 for master=1:iter 
@@ -10,7 +10,7 @@ clf ;
 system("rm *.vec");
 system("rm *.sca");
 
-number_of_nodes = 16 ;
+number_of_nodes = 50 ;
 rnd = rand(1,number_of_nodes);
 hold on ;
 for fasika = 1:4
@@ -27,13 +27,13 @@ updateInterval = 1;                 %% In simulation seconds
 if(s==1) 			    %% Speed of the nodes , random in a sense that 
 speed = 0 ;
 elseif(s==2)
-speed = 5.4 ;   
+speed = 5.4 + rand() ;   
 elseif(s==3)
-speed = 20 ;
+speed = 20 + rand ;
 endif
 gain = 0.75 ;                       %% Value for computing the offsets 
 express = "yes" ;                   %% Enable or Disable express mode 
-alpha =2.5;                       %% Channel factor - attenuation if you might say ...
+alpha =2.5;                         %% Channel factor - attenuation if you might say ...
 playgroundSizeX = (sqrt(number_of_nodes)+1)*30; % The distance between the nodes is at max 30 meters 
 %%playgroundSizeX = 300 ;
 playgroundSizeY =  playgroundSizeX ;            %% meters
@@ -41,6 +41,7 @@ playgroundSizeY =  playgroundSizeX ;            %% meters
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          END OF PARAMETERS , OUT                                     %%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 if (fasika == 1)
 color = 'b' ;
 elseif(fasika == 2 )
@@ -161,7 +162,7 @@ z(i+1) = i ;
 fprintf(fidout, "mobileNet.Node[%d].mobility.z = 0\n",z(i+1));
 fprintf(fidout, "mobileNet.Node[%d].normalNic.id = %d\n", i, i );
 fprintf(fidout, "mobileNet.Node[%d].normalNic.start_time = %f \n",i, rnd(i+1));
-fprintf(fidout, "mobileNet.Node[%d].mobility.speed= %f\n",i, 20*rand());
+fprintf(fidout, "mobileNet.Node[%d].mobility.speed= %f\n",i, speed);
 fprintf(fidout, "mobileNet.Node[%d].mobility.updateInterval= %f\n",i, updateInterval);
 fprintf(fidout, "mobileNet.Node[%d].mobility.debug = 0 \n\n",i);
 j=j+1;
@@ -271,16 +272,17 @@ weight = weight / iter ;
 curvefit = curvefit / iter ;
 %% PLOT THE DAMN AVERAGED GRAPHS FROM THE VARIABLES
 hold on ;
-plot(kalman, '+','LineWidth',2);
-plot(med, '.','LineWidth',2);
-plot(weight, 'o','LineWidth',2);
-plot(curvefit, 'm','LineWidth',2);
+plot(kalman, 'b','LineWidth',2);
+plot(med, 'r','LineWidth',2);
+plot(weight, 'm','LineWidth',2);
+plot(curvefit, 'c','LineWidth',2);
 tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
 xlabel('period(sec)');
 ylabel('Synchronization error(clock cycles)');
 legend("KALMAN FILTER","MEDIAN","WEIGHTED MEASURMENTS","NONLINEAR CURVE FITTING");
 %legend("0.25","0.5","0.75","1.0");
 title(tit);
+grid on ;
 print(filename) ;
 clf;
 %% Perform comparisons Numerically
@@ -297,6 +299,9 @@ xlabel('period(sec)') ;
 ylabel('Percentage Performance Improvment over Median(%)');
 legend("KALMAN FILTER","WEIGHTED MEASURMENTS","NONLINEAR CURVE FITTING");
 title('Percentage performance improvement compared to Median algorithm(%)');
+grid on ;
 print(filename) ;
 endfor
+%% For the gradient graph
+%%  y = (rho*d.*log(x-1))./(8*(1+rho)*log(8*(1+rho).*log(x-1)/rho)) 
 disp("Euffffffffff");

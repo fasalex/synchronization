@@ -16,7 +16,7 @@
     int i, n;
 int main() {  
 	int fasika ;	
-	for(fasika =1;fasika < 100000;fasika++){
+	for(fasika =1;fasika < 10000;fasika++){
         med(nNeighbours);
 	kalman(nNeighbours);
 	weighty(nNeighbours);
