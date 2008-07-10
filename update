@@ -1,0 +1,4 @@
+#/usr/bin bash 
+svn update 
+cd /home/fasika/Desktop/Report
+svn update
