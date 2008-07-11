@@ -22,6 +22,7 @@ void PhyLayer::initialize(int stage) {
 }
 
 void PhyLayer::handleMessage(cMessage* msg) {	
+	bubble("message received ") ;
 		//self messages	
 	if(msg->isSelfMessage()) {
 		handleSelfMessage(msg);

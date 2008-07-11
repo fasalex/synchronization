@@ -43,6 +43,7 @@ void MacLayer::initialize(int stage) {
 }
 
 void MacLayer::handleMessage(cMessage* msg) {
+
        if( msg->kind() == BROADCAST_MESSAGE ){
                logg("Sending Broadcast Messages to the physical Layer ....");
                output_vec.record(broadcast_time*1000000) ;
@@ -122,9 +123,9 @@ void MacLayer::analyze_msg()
 
 		x = offset ; // Initial estimate 
 		P = 1 ; // Initial estimate of covariance matrix - error covariance matrix
+
+		Q=1;R=1e-6;
 		
-		Q = 1; // covariance matrix - 
-		R = 1e-6;
 		H = 1;
 		phi = 1;
 		// Loop 
