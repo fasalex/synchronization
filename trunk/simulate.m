@@ -1,10 +1,11 @@
 %%%% The begining of the end !!!!!!!!!!
-for s=1:3
-iter = 5 ;
+for s=1:1
+iter = 1 ;
 finalvec = zeros(iter,1000);
+barplotter=zeros(50,1000,4); 
 clf;
 for master=1:iter 
-keep('master','finalvec','iter','s');
+keep('master','finalvec','iter','s','barplotter');
 clf ;
 
 system("rm *.vec");
@@ -14,13 +15,13 @@ number_of_nodes = 50 ;
 rnd = rand(1,number_of_nodes);
 hold on ;
 for fasika = 1:4
-keep('fasika','number_of_nodes','rnd','master','finalvec','iter','s');
+keep('fasika','number_of_nodes','rnd','master','finalvec','iter','s','barplotter');
 algorithm = fasika  ;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          INPUT PARAMETERS FOR THE SIMULATION                         %%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-run = 1 ;                           %% 1 - commandline  2 - gui 
+run = 2 ;                           %% 1 - commandline  2 - gui 
 jump = 1 ;                          %% jump to reduce the calculation burden 
 sim_time_limit = 1000;		    %% Number of events needed for "limit" 
 updateInterval = 1;                 %% In simulation seconds 
@@ -250,6 +251,9 @@ endfor
 fclose(fidin);
 endfor
 %% START EXTRACTING THE VECTOR FORM THE FILE 
+for(l=1:sim_time_limit)
+barplotter(:,l,fasika) = (MainVector(:,l)-min(MainVector(:,l)))' ;
+endfor
 finalvec((master-1)*4 + fasika,:) = uint8(max(MainVector(:,1:1000)/30)-min(MainVector(:,1:1000)/30)) ;
 endfor
 endfor 
@@ -304,4 +308,5 @@ print(filename) ;
 endfor
 %% For the gradient graph
 %%  y = (rho*d.*log(x-1))./(8*(1+rho)*log(8*(1+rho).*log(x-1)/rho)) 
+anime = [kalman,med,weight,curvefit]';
 disp("Euffffffffff");

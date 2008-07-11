@@ -2,13 +2,13 @@ clf ;
 system("rm *.vec");
 system("rm *.sca");
 number_of_nodes = 16 ;
+finalvec=zeros(number_of_nodes,1000,4); 
 rnd = rand(1,number_of_nodes);
 hold on ;
 
-keep('number_of_nodes','rnd');
-algorithm = 2 ;
-fasika = 1;
-
+for fasika = 1:4
+keep('fasika','number_of_nodes','rnd','finalvec');
+algorithm = fasika  ;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          INPUT PARAMETERS FOR THE SIMULATION                         %%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -241,14 +241,16 @@ endfor
 tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
 m = length(MainVector);
 MainVector(:,sim_time_limit:m) = MainVector(1,sim_time_limit-1) ;
-%temp = max(MainVector) - min(MainVector) ;
+for(j=1:sim_time_limit)
+finalvec(:,j,fasika) = (MainVector(:,j)-min(MainVector(:,j)))' ;
+endfor
 plot(std(MainVector)/30,color,"LineWidth",2);
 MainVector = MainVector(:,1:1000);
 xlabel('period(sec)');
 ylabel('Synchronization error(clock cycles)');
 legend("KALMAN FILTER","MEDIAN","WEIGHTED MEASURMENTS","NONLINEAR CURVE FITTING");
 title(tit) ;
-print(filename);
+%%print(filename);
 hold on ;
+endfor
 disp("SIMULATION ENDED") ;
-
