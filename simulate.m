@@ -1,8 +1,8 @@
 %%%% The begining of the end !!!!!!!!!!
 for s=1:1
 iter = 1 ;
-finalvec = zeros(iter,1000);
-barplotter=zeros(50,1000,4); 
+finalvec = zeros(iter,500);
+barplotter=zeros(16,500,4); 
 clf;
 for master=1:iter 
 keep('master','finalvec','iter','s','barplotter');
@@ -11,7 +11,7 @@ clf ;
 system("rm *.vec");
 system("rm *.sca");
 
-number_of_nodes = 50 ;
+number_of_nodes = 16 ;
 rnd = rand(1,number_of_nodes);
 hold on ;
 for fasika = 1:4
@@ -21,16 +21,16 @@ algorithm = fasika  ;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          INPUT PARAMETERS FOR THE SIMULATION                         %%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-run = 2 ;                           %% 1 - commandline  2 - gui 
+run = 1 ;                           %% 1 - commandline  2 - gui 
 jump = 1 ;                          %% jump to reduce the calculation burden 
-sim_time_limit = 1000;		    %% Number of events needed for "limit" 
+sim_time_limit = 500;		    %% Number of events needed for "limit" 
 updateInterval = 1;                 %% In simulation seconds 
 if(s==1) 			    %% Speed of the nodes , random in a sense that 
 speed = 0 ;
 elseif(s==2)
 speed = 5.4 + rand() ;   
 elseif(s==3)
-speed = 20 + rand ;
+speed = 20 + rand() ;
 endif
 gain = 0.75 ;                       %% Value for computing the offsets 
 express = "yes" ;                   %% Enable or Disable express mode 
@@ -46,11 +46,11 @@ playgroundSizeY =  playgroundSizeX ;            %% meters
 if (fasika == 1)
 color = 'b' ;
 elseif(fasika == 2 )
-color = '.';
+color = '^';
 elseif(fasika == 3)
 color = '+';
 elseif(fasika == 4)
-color = 'o';
+color = 'rs';
 elseif(fasika == 5)
 color = 'c';
 elseif(fasika == 6)
@@ -76,7 +76,7 @@ ininame = "omnetpp.ini";
 spe = int2str(speed);
 gai = int2str(gain*10);
 no = int2str(number_of_nodes);
-ra = int2str(rand()*1000 );
+ra = int2str(rand()*500 );
 alp = int2str(alpha*100);
 ext = '.eps';
 filename = strcat(prefix,ra,'s',spe,'-g',gai,'-n',no,'-alpha',alp,ext);
@@ -254,14 +254,14 @@ endfor
 for(l=1:sim_time_limit)
 barplotter(:,l,fasika) = (MainVector(:,l)-min(MainVector(:,l)))' ;
 endfor
-finalvec((master-1)*4 + fasika,:) = uint8(max(MainVector(:,1:1000)/30)-min(MainVector(:,1:1000)/30)) ;
+finalvec((master-1)*4 + fasika,:) = uint8(max(MainVector(:,1:500)/30)-min(MainVector(:,1:500)/30)) ;
 endfor
 endfor 
 
-kalman = zeros(1,1000);
-med = zeros(1,1000);
-weight = zeros(1,1000);
-curvefit = zeros(1,1000);
+kalman = zeros(1,500);
+med = zeros(1,500);
+weight = zeros(1,500);
+curvefit = zeros(1,500);
 
 for(k=1:iter)
     kalman = kalman + finalvec((k-1)*4 + 1 ,:) ;
@@ -277,9 +277,9 @@ curvefit = curvefit / iter ;
 %% PLOT THE DAMN AVERAGED GRAPHS FROM THE VARIABLES
 hold on ;
 plot(kalman, 'b','LineWidth',2);
-plot(med, 'r','LineWidth',2);
-plot(weight, 'm','LineWidth',2);
-plot(curvefit, 'c','LineWidth',2);
+plot(med, '^-r','LineWidth',2);
+plot(weight, '+-m','LineWidth',2);
+plot(curvefit, '-os','LineWidth',2);
 tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
 xlabel('period(sec)');
 ylabel('Synchronization error(clock cycles)');
