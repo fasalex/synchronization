@@ -172,14 +172,15 @@ void MacLayer::analyze_msg()
 		double sumcons = 0 ;
 		double cons = 1 ;
 		for(int i = 0 ; i < count ; i++){
-			if(temp_varr[i] < 9*30*1e-6)
+			/*if(temp_varr[i] < 9*30*1e-6)
 				cons = 0.9 ;
 			else if( temp_varr[i] < 18*30*1e-6)
 				cons = 0.6 ;
 			else if( temp_varr[i] < 27*30*1e-6)
 				cons = 0.3 ;
 			else 
-				cons = 0.01 ;
+				cons = 0.01 ;*/
+			cons = 0.15*exp(temp_varr[i]) ;
 		        temp_varr[i] = cons * temp_varr[i] ;
 			sum += temp_varr[i] ;
 			sumcons += cons ;
