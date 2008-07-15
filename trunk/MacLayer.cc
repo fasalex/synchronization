@@ -150,7 +150,7 @@ void MacLayer::analyze_msg()
 
 			P = ( 1 - (Ka * H)) * P;	
 		}
-			offset = gain*x ;
+			offset = 0.75 * x ;
 			if(offset !=0)
           		offset += add_on ;
                break;}
@@ -172,23 +172,16 @@ void MacLayer::analyze_msg()
 		double sumcons = 0 ;
 		double cons = 1 ;
 		for(int i = 0 ; i < count ; i++){
-			/*if(temp_varr[i] < 9*30*1e-6)
-				cons = 0.9 ;
-			else if( temp_varr[i] < 18*30*1e-6)
-				cons = 0.6 ;
-			else if( temp_varr[i] < 27*30*1e-6)
-				cons = 0.3 ;
-			else 
-				cons = 0.01 ;*/
-			cons = 0.15*exp(temp_varr[i]) ;
-		        temp_varr[i] = cons * temp_varr[i] ;
+			int fas = (int) temp_varr[i] / (30e-6) ;
+			cons = exp(-0.2302*fas) ;
+			temp_varr[i] = cons * temp_varr[i] ;
 			sum += temp_varr[i] ;
 			sumcons += cons ;
 		}
 	
 		if(sumcons!=0){
 		offset = sum / sumcons ;
-		offset = offset * gain ;
+		offset = offset * 0.9 ;
 		offset += add_on ;}
                 else
 		offset = 0 ;
@@ -198,11 +191,12 @@ void MacLayer::analyze_msg()
 // Non-linear least square curve fitting 
 
 		double a,b, sum, sumlog, sumprod, sumsq = 0 ;
+		a = 3e-6;
 		if(count == 0)
 			offset = 0 ;
 		else if(count == 1){
 		    offset = temp_varr[0]/ 2 ;
-		    offset = offset * gain ;
+//		    offset = offset * gain ;
 		    offset += add_on ;
 		}else{
 			for(int i = 0;i<count;i++){
@@ -214,8 +208,8 @@ void MacLayer::analyze_msg()
 			}
 			double control = count*sumsq - sumlog*sumlog ;
 			if(control!=0){
-				b = (count*sumprod - sum*sumlog)/control;
-				a = (sum - b*sumlog)/count;
+				b = b + (count*sumprod - sum*sumlog)/control;
+				a = a + (sum - b*sumlog)/count;
 				offset = a + b*log((double)(count/2));
 				offset += add_on ;
 			}else 

@@ -1,6 +1,9 @@
+
 clf ;
+
 system("rm *.vec");
 system("rm *.sca");
+
 number_of_nodes = 16 ;
 finalvec=zeros(number_of_nodes,1000,4); 
 rnd = rand(1,number_of_nodes);
