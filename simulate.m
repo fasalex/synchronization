@@ -1,8 +1,8 @@
 %%%% The begining of the end !!!!!!!!!!
-for s=1:1
+for s=1:3
 iter = 1 ;
 finalvec = zeros(iter,500);
-barplotter=zeros(16,500,4); 
+barplotter=zeros(50,500,4); 
 clf;
 for master=1:iter 
 keep('master','finalvec','iter','s','barplotter');
@@ -11,12 +11,12 @@ clf ;
 system("rm *.vec");
 system("rm *.sca");
 
-number_of_nodes = 16 ;
+number_of_nodes = 50 ;
 rnd = rand(1,number_of_nodes);
 hold on ;
 for fasika = 1:4
 keep('fasika','number_of_nodes','rnd','master','finalvec','iter','s','barplotter');
-algorithm = fasika  ;
+algorithm = fasika ;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          INPUT PARAMETERS FOR THE SIMULATION                         %%%%%%%%%%%%%%
@@ -297,8 +297,8 @@ NLCF = abs(med - curvefit)*100./med ;
 hold on ;
 filename = strcat(prefix,ra,'s',spe,'-g',gai,'-n',no,'-alpha',alp,' Error',ext);
 plot(K,'b','LineWidth',2);
-plot(W,'c','LineWidth',2);
-plot(NLCF,'m','LineWidth',2) ;
+plot(W,'+-m','LineWidth',2);
+plot(NLCF,'-os','LineWidth',2) ;
 xlabel('period(sec)') ;
 ylabel('Percentage Performance Improvment over Median(%)');
 legend("KALMAN FILTER","WEIGHTED MEASURMENTS","NONLINEAR CURVE FITTING");
