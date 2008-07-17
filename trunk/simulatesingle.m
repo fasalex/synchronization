@@ -42,8 +42,9 @@ endif
 algor = int2str(algorithm);
 disp(algor) ;
 prefix = "/home/fasika/mixim/trunk/examples/synchronization/graphs/";	% output directory
-model = "./New";		  % simulation command
+model = "./New";		  
 
+% simulation command
 %% create ini file
 
 if(run==1)
@@ -237,7 +238,7 @@ if(iRow > 1)
 MainVector(node_num+1,iRow-1) = val;
 endif
 endif
-%Repeat this only using Rem as the total string and incrementing the iCol counter
+% Repeat this only using Rem as the total string and incrementing the iCol counter
 endfor
 fclose(fidin);
 endfor
@@ -253,7 +254,7 @@ xlabel('period(sec)');
 ylabel('Synchronization error(clock cycles)');
 legend("KALMAN FILTER","MEDIAN","WEIGHTED MEASURMENTS","NONLINEAR CURVE FITTING");
 title(tit) ;
-%%print(filename);
+% print(filename);
 hold on ;
 endfor
 disp("SIMULATION ENDED") ;
