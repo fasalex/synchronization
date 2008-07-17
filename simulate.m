@@ -2,7 +2,7 @@
 for s=1:3
 iter = 1 ;
 finalvec = zeros(iter,500);
-barplotter=zeros(50,500,4); 
+barplotter=zeros(10,500,4); 
 clf;
 for master=1:iter 
 keep('master','finalvec','iter','s','barplotter');
@@ -11,7 +11,7 @@ clf ;
 system("rm *.vec");
 system("rm *.sca");
 
-number_of_nodes = 50 ;
+number_of_nodes = 10 ;
 rnd = rand(1,number_of_nodes);
 hold on ;
 for fasika = 1:4
@@ -276,18 +276,18 @@ weight = weight / iter ;
 curvefit = curvefit / iter ;
 %% PLOT THE DAMN AVERAGED GRAPHS FROM THE VARIABLES
 hold on ;
-plot(kalman, 'b','LineWidth',2);
-plot(med, '^-r','LineWidth',2);
-plot(weight, '+-m','LineWidth',2);
-plot(curvefit, '-os','LineWidth',2);
+plot(kalman, 'b','LineWidth',3);
+plot(med, '^-r','LineWidth',3);
+plot(weight, '+-m','LineWidth',3);
+plot(curvefit, '-os','LineWidth',3);
 tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
-xlabel('period(sec)');
-ylabel('Synchronization error(clock cycles)');
+xlabel('period(sec)','fontsize',22);
+ylabel('Synchronization error(clock cycles)','fontsize',22);
 legend("KALMAN FILTER","MEDIAN","WEIGHTED MEASURMENTS","NONLINEAR CURVE FITTING");
 %legend("0.25","0.5","0.75","1.0");
-title(tit);
+title(tit,'fontsize',24);
 grid on ;
-print(filename) ;
+print('-F:20',filename) ;
 clf;
 %% Perform comparisons Numerically
 med(find(med<=1)) = 1 ;
@@ -296,15 +296,15 @@ W = abs(med - weight)*100./ med ;
 NLCF = abs(med - curvefit)*100./med ;
 hold on ;
 filename = strcat(prefix,ra,'s',spe,'-g',gai,'-n',no,'-alpha',alp,' Error',ext);
-plot(K,'b','LineWidth',2);
-plot(W,'+-m','LineWidth',2);
-plot(NLCF,'-os','LineWidth',2) ;
-xlabel('period(sec)') ;
-ylabel('Percentage Performance Improvment over Median(%)');
+plot(K,'b','LineWidth',3);
+plot(W,'+-m','LineWidth',3);
+plot(NLCF,'-os','LineWidth',3) ;
+xlabel('period(sec)','fontsize',22) ;
+ylabel('Percentage Performance Improvment over Median(%)','fontsize',22);
 legend("KALMAN FILTER","WEIGHTED MEASURMENTS","NONLINEAR CURVE FITTING");
-title('Percentage performance improvement compared to Median algorithm(%)');
+title('Percentage performance improvement compared to Median algorithm(%)','fontsize',24);
 grid on ;
-print(filename) ;
+print('-F:20',filename) ;
 endfor
 %% For the gradient graph
 %%  y = (rho*d.*log(x-1))./(8*(1+rho)*log(8*(1+rho).*log(x-1)/rho)) 
