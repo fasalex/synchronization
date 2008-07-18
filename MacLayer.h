@@ -12,12 +12,15 @@ const int clock_const = 1 ;
 double temperature = 23 ;
 const int frame_length = 11;
 int jump ;
-double offset = 0;
+
 
 class MacLayer:public BaseModule {
 private:
+	double offset;
+	double offinitial;
 	double rnd ;
 	double broadcast_time;
+	int period;
 	double frequency ;
 	double temp_varr[SIZE_OF_NETWORK];
 	int count;
