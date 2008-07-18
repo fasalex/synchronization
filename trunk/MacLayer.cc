@@ -20,7 +20,10 @@ void MacLayer::initialize(int stage) {
        if(stage == 0) {
                myIndex = parentModule()->par("id") ;
                count = 0;
+	       period = 0 ;
                Ref = 0 ;
+		offset = 0 ;
+		offinitial = 0 ;
                dataOut = findGate("lowerGateOut");
                dataIn = findGate("lowerGateIn");
                controlOut = findGate("lowerControlOut");
@@ -33,6 +36,7 @@ void MacLayer::initialize(int stage) {
                broadcast_time = random_start;
                MacPkt* pkt = createMacPkt(frame_length);
                scheduleAt(broadcast_time, pkt);
+		period++ ;
 
                cMessage *ctrl = new cMessage("Control Message");
 //               Ref = broadcast_time + 0.5*frequency ;
@@ -47,6 +51,7 @@ void MacLayer::handleMessage(cMessage* msg) {
        if( msg->kind() == BROADCAST_MESSAGE ){
                logg("Sending Broadcast Messages to the physical Layer ....");
                output_vec.record(broadcast_time*1000000) ;
+
                sendDown(msg);
        }
        else if (msg->kind() == CONTROL_MESSAGE){
@@ -120,8 +125,12 @@ void MacLayer::analyze_msg()
 		double Q;   // noise covariance  
 
 		// Initialize the matrices 
-
-		x = offset ; // Initial estimate 
+		if(count<100){
+		x=offset;
+		offinitial = offset ;}
+		else
+		x = offinitial ; // Initial estimate 
+	
 		P = 1 ; // Initial estimate of covariance matrix - error covariance matrix
 
 		Q=1;R=1e-6;
@@ -222,11 +231,15 @@ void MacLayer::analyze_msg()
                break;
        }
 
+       if(period%jump != 0)
+	offset = 0 ;
+
        broadcast_time = broadcast_time - offset + frequency ;
        Ref = broadcast_time + 0.01  ;
 
        MacPkt* pkt = createMacPkt(frame_length);
        scheduleAt(broadcast_time,pkt) ;
+	period++;
 
        cMessage *ctrl = new cMessage("Control Message");
        ctrl->setKind(CONTROL_MESSAGE);
