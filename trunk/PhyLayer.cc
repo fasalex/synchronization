@@ -51,9 +51,13 @@ void PhyLayer::handleAirFrame(cMessage* msg)
 {	
 	log("Handling the messages received from Neighbour Nodes ...") ;
 	AirFrame* frame = static_cast<AirFrame*>(msg) ;
+
 // Sending the signal to be filtered to the analoge module .....
+
 	filterSignal(frame->getSignal());
+
 // To the decider if there is one ...
+
 	if(decider)
 		handleAirFrameReceive(frame);		
 

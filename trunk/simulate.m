@@ -1,8 +1,8 @@
 %%%% The begining of the end !!!!!!!!!!
-for s=1:1
+for s=1:3
 iter = 1 ;
 finalvec = zeros(iter,500);
-barplotter=zeros(10,500,4); 
+barplotter=zeros(20,500,4); 
 clf;
 for master=1:iter 
 keep('master','finalvec','iter','s','barplotter');
@@ -11,7 +11,7 @@ clf ;
 system("rm *.vec");
 system("rm *.sca");
 
-number_of_nodes = 10 ;
+number_of_nodes = 20 ;
 rnd = rand(1,number_of_nodes);
 hold on ;
 for fasika = 1:4
@@ -275,13 +275,15 @@ med = med / iter ;
 weight = weight / iter ;
 curvefit = curvefit / iter ;
 %% PLOT THE DAMN AVERAGED GRAPHS FROM THE VARIABLES
+
 hold on ;
-x = 1:5:500;
-for(b=1:100)
-kalman1(b) = kalman(5*b);
-med1(b) = med(5*b);
-weight1(b) = weight(5*b);
-curvefit1(b) = curvefit(5*b);
+fasc=4;
+x = 1:fasc:500;
+for(b=1:500/fasc)
+kalman1(b) = kalman(fasc*b);
+med1(b) = med(fasc*b);
+weight1(b) = weight(fasc*b);
+curvefit1(b) = curvefit(fasc*b);
 endfor
 plot(x,kalman1, 'b','LineWidth',3);
 plot(x,med1, '^-r','LineWidth',3);
@@ -297,6 +299,8 @@ title(tit,'fontsize',24);
 grid on ;
 print('-F:20',filename) ;
 clf;
+
+hold on;
 plot(kalman, 'b','LineWidth',3);
 plot(med, '^-r','LineWidth',3);
 plot(weight, '+-m','LineWidth',3);
