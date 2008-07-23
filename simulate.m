@@ -1,8 +1,8 @@
 %%%% The begining of the end !!!!!!!!!!
-for s=1:3
+for s=1:1
 iter = 1 ;
 finalvec = zeros(iter,500);
-barplotter=zeros(20,500,4); 
+barplotter=zeros(10,500,4); 
 clf;
 for master=1:iter 
 keep('master','finalvec','iter','s','barplotter');
@@ -11,7 +11,7 @@ clf ;
 system("rm *.vec");
 system("rm *.sca");
 
-number_of_nodes = 20 ;
+number_of_nodes = 10 ;
 rnd = rand(1,number_of_nodes);
 hold on ;
 for fasika = 1:4
@@ -26,7 +26,7 @@ jump = 1 ;                          %% jump to reduce the calculation burden
 sim_time_limit = 500;		    %% Number of events needed for "limit" 
 updateInterval = 1;                 %% In simulation seconds 
 if(s==1) 			    %% Speed of the nodes , random in a sense that 
-speed = 0 ;
+speed = 50 ;
 elseif(s==2)
 speed = 5.4 + rand() ;   
 elseif(s==3)
@@ -150,6 +150,7 @@ fprintf(fidout, "mobileNet.Node[*].mobility.acceleration = 2 \n");
 speed = speed * (1/3.6) ;
 i=0;
 j=0;
+
 squ = sqrt(number_of_nodes) ;
 spac = playgroundSizeX / (1 + squ) ;
 squ = int8(squ) ;
@@ -255,9 +256,10 @@ for(l=1:sim_time_limit)
 barplotter(:,l,fasika) = (MainVector(:,l)-min(MainVector(:,l)))' ;
 endfor
 finalvec((master-1)*4 + fasika,:) = uint8(max(MainVector(:,1:500)/30)-min(MainVector(:,1:500)/30)) ;
+%MainVector = MainVector(:,1:500);
+%finalvec((master-1)*4 + fasika,:) = uint8(std(MainVector/30));
 endfor
 endfor 
-
 kalman = zeros(1,500);
 med = zeros(1,500);
 weight = zeros(1,500);
@@ -277,7 +279,7 @@ curvefit = curvefit / iter ;
 %% PLOT THE DAMN AVERAGED GRAPHS FROM THE VARIABLES
 
 hold on ;
-fasc=4;
+fasc=2;
 x = 1:fasc:500;
 for(b=1:500/fasc)
 kalman1(b) = kalman(fasc*b);
@@ -289,10 +291,11 @@ plot(x,kalman1, 'b','LineWidth',3);
 plot(x,med1, '^-r','LineWidth',3);
 plot(x,weight1, '+-m','LineWidth',3);
 plot(x,curvefit1, '-os','LineWidth',3);
-tit = strcat('Synchronization error for ',no,' nodes moving at ',spe);
+tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
+%tit = strcat('Synchronization error for ',no,' nodes with different gain factors');
 xlabel('period(sec)','fontsize',22);
 ylabel('Synchronization error(clock cycles)','fontsize',22);
-legend("KALMAN FILTER","MEDIAN","WEIGHTED MEASURMENTS","NONLINEAR CURVE FITTING");
+legend("KF","M","WM","NLLS");
 %legend("0.4","0.6","0.8","1");
 %legend("0.25","0.5","0.75","1.0");
 title(tit,'fontsize',24);
@@ -305,10 +308,11 @@ plot(kalman, 'b','LineWidth',3);
 plot(med, '^-r','LineWidth',3);
 plot(weight, '+-m','LineWidth',3);
 plot(curvefit, '-os','LineWidth',3);
-tit = strcat('Synchronization error for ',no,' nodes moving at ',spe);
+tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
+%tit = strcat('Synchronization error for ',no,' nodes with different gain factors');
 xlabel('period(sec)','fontsize',22);
 ylabel('Synchronization error(clock cycles)','fontsize',22);
-legend("KALMAN FILTER","MEDIAN","WEIGHTED MEASURMENTS","NONLINEAR CURVE FITTING");
+legend("KF","M","WM","NLLS");
 %legend("0.4","0.6","0.8","1");
 %legend("0.25","0.5","0.75","1.0");
 title(tit,'fontsize',24);
@@ -323,12 +327,19 @@ W = abs(med - weight)*100./ med ;
 NLCF = abs(med - curvefit)*100./med ;
 hold on ;
 filename = strcat(prefix,ra,'s',spe,'-g',gai,'-n',no,'-alpha',alp,' Error',ext);
-plot(K,'b','LineWidth',3);
-plot(W,'+-m','LineWidth',3);
-plot(NLCF,'-os','LineWidth',3) ;
+fasc = 2 ;
+x = 1:fasc:500;
+for(b=1:500/fasc)
+K1(b) = K(fasc*b);
+W1(b) = W(fasc*b);
+NLCF1(b) = NLCF(fasc*b);
+endfor
+plot(x,K1,'b','LineWidth',3);
+plot(x,W1,'+-m','LineWidth',3);
+plot(x,NLCF1,'-os','LineWidth',3) ;
 xlabel('period(sec)','fontsize',22) ;
-ylabel('Performance Improvment over Median(%)','fontsize',22);
-legend("KALMAN FILTER","WEIGHTED MEASURMENTS","NONLINEAR CURVE FITTING");
+ylabel('Relative Improvement(%)','fontsize',22);
+legend("KF","WM","NLLS");
 title('Performance improvement compared to Median algorithm(%)','fontsize',24);
 grid on ;
 print('-F:20',filename) ;
