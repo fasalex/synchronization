@@ -1,8 +1,8 @@
 %%%% The begining of the end !!!!!!!!!!
-for s=1:1
-iter = 1 ;
+for s=1:3
+iter = 10;
 finalvec = zeros(iter,500);
-barplotter=zeros(10,500,4); 
+barplotter=zeros(20,500,4); 
 clf;
 for master=1:iter 
 keep('master','finalvec','iter','s','barplotter');
@@ -11,28 +11,28 @@ clf ;
 system("rm *.vec");
 system("rm *.sca");
 
-number_of_nodes = 10 ;
+number_of_nodes = 20 ;
 rnd = rand(1,number_of_nodes);
 hold on ;
 for fasika = 1:4
 keep('fasika','number_of_nodes','rnd','master','finalvec','iter','s','barplotter');
-algorithm = fasika ;
+algorithm = 1 ;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          INPUT PARAMETERS FOR THE SIMULATION                         %%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 run = 1 ;                           %% 1 - commandline  2 - gui 
-jump = 1 ;                          %% jump to reduce the calculation burden 
+jump = fasika ;                          %% jump to reduce the calculation burden 
 sim_time_limit = 500;		    %% Number of events needed for "limit" 
 updateInterval = 1;                 %% In simulation seconds 
 if(s==1) 			    %% Speed of the nodes , random in a sense that 
-speed = 50 ;
+speed = 0 ;
 elseif(s==2)
 speed = 5.4 + rand() ;   
 elseif(s==3)
 speed = 20 + rand() ;
 endif
-gain = 0.8 ;                       %% Value for computing the offsets 
+gain = 0.8;                       %% Value for computing the offsets 
 express = "yes" ;                   %% Enable or Disable express mode 
 alpha =2.5;                         %% Channel factor - attenuation if you might say ...
 playgroundSizeX = (sqrt(number_of_nodes)+1)*30; % The distance between the nodes is at max 30 meters 
@@ -276,6 +276,7 @@ kalman = kalman / iter;
 med = med / iter ;
 weight = weight / iter ;
 curvefit = curvefit / iter ;
+
 %% PLOT THE DAMN AVERAGED GRAPHS FROM THE VARIABLES
 
 hold on ;
@@ -291,12 +292,14 @@ plot(x,kalman1, 'b','LineWidth',3);
 plot(x,med1, '^-r','LineWidth',3);
 plot(x,weight1, '+-m','LineWidth',3);
 plot(x,curvefit1, '-os','LineWidth',3);
-tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
+%tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
+tit = strcat('Synchronization error for nodes at ',spe,' km/hr with different T_{sync}');
 %tit = strcat('Synchronization error for ',no,' nodes with different gain factors');
 xlabel('period(sec)','fontsize',22);
 ylabel('Synchronization error(clock cycles)','fontsize',22);
-legend("KF","M","WM","NLLS");
+%legend("KF","M","WM","NLLS");
 %legend("0.4","0.6","0.8","1");
+legend("1","2","3","4");
 %legend("0.25","0.5","0.75","1.0");
 title(tit,'fontsize',24);
 grid on ;
@@ -308,11 +311,13 @@ plot(kalman, 'b','LineWidth',3);
 plot(med, '^-r','LineWidth',3);
 plot(weight, '+-m','LineWidth',3);
 plot(curvefit, '-os','LineWidth',3);
-tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
+%tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
+tit = strcat('Synchronization error for nodes at ',spe,' km/hr with different T_{sync}');
 %tit = strcat('Synchronization error for ',no,' nodes with different gain factors');
 xlabel('period(sec)','fontsize',22);
 ylabel('Synchronization error(clock cycles)','fontsize',22);
-legend("KF","M","WM","NLLS");
+%legend("KF","M","WM","NLLS");
+legend("1","2","3","4");
 %legend("0.4","0.6","0.8","1");
 %legend("0.25","0.5","0.75","1.0");
 title(tit,'fontsize',24);
@@ -344,7 +349,9 @@ title('Performance improvement compared to Median algorithm(%)','fontsize',24);
 grid on ;
 print('-F:20',filename) ;
 endfor
+
 %% For the gradient graph
 %%  y = (rho*d.*log(x-1))./(8*(1+rho)*log(8*(1+rho).*log(x-1)/rho)) 
+
 anime = [kalman,med,weight,curvefit]';
 disp("Euffffffffff");
