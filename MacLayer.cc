@@ -58,7 +58,7 @@ void MacLayer::handleMessage(cMessage* msg) {
                logg("Control Message Received - Updating the period ...") ;
                analyze_msg();
                delete msg;
-       }else if((simTime() > broadcast_time) && (count <=9)){  
+       }else if((simTime() > broadcast_time) && (count <= jump + 5)){  
                logg("Collecting the offsets from Neighbours ....");
                collect_data(msg);
                delete msg ;
@@ -124,14 +124,10 @@ void MacLayer::analyze_msg()
 		double Ka;  // Kalman gain 
 		double Q;   // noise covariance  
 
-		// Initialize the matrices 
-		if(count<100){
-		x=offset;
-		offinitial = offset ;}
-		else
-		x = offinitial ; // Initial estimate 
+                        	// Initialize the matrices 
+		x=offset;  // Initial estimate 
 	
-		P = 1 ; // Initial estimate of covariance matrix - error covariance matrix
+		P = 1 ;   // Initial estimate of covariance matrix - error covariance matrix
 
 		Q=1;R=1e-6;
 		
