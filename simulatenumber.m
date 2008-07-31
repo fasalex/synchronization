@@ -1,6 +1,6 @@
 %%%% The begining of the end !!!!!!!!!!
 for s=1:1
-iter = 1;
+iter = 2;
 finalvec = zeros(iter,500);
 clf;
 for master=1:iter 
@@ -10,8 +10,8 @@ clf ;
 system("rm *.vec");
 system("rm *.sca");
 
-%number_of_nodes = 20 ;
-%rnd = rand(1,number_of_nodes);
+number_of_nodes = 20 ;
+rnd = rand(1,number_of_nodes);
 hold on ;
 for fasika = 1:4
 keep('fasika','number_of_nodes','rnd','master','finalvec','iter','s','barplotter');
@@ -22,16 +22,12 @@ algorithm = 1  ;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 run = 1 ;                           %% 1 - commandline  2 - gui 
 jump = 1 ;                     %% jump to reduce the calculation burden 
-number_of_nodes = fasika * 10 ;
-disp(number_of_nodes);
-for i=1:10
-disp("Euffffffffff");
-endfor
-rnd = rand(1,number_of_nodes);
+%number_of_nodes = fasika * 10 ;
+%rnd = rand(1,number_of_nodes);
 sim_time_limit = 500;		    %% Number of events needed for "limit" 
 updateInterval = 1;                 %% In simulation seconds 
 if(s==1) 			    %% Speed of the nodes , random in a sense that 
-speed = 10;
+speed = fasika * 10 - 10 ;
 elseif(s==2)
 speed = 5.4 + rand() ;   
 elseif(s==3)
@@ -40,8 +36,8 @@ endif
 gain = 0.8;                       %% Value for computing the offsets 
 express = "yes" ;                   %% Enable or Disable express mode 
 alpha =2.5;                         %% Channel factor - attenuation if you might say ...
-%playgroundSizeX = (sqrt(number_of_nodes)+1)*30; % The distance between the nodes is at max 30 meters 
-playgroundSizeX = 500 ;
+playgroundSizeX = (sqrt(number_of_nodes)+1)*30; % The distance between the nodes is at max 30 meters 
+%playgroundSizeX = 200 ;
 playgroundSizeY =  playgroundSizeX ;            %% meters
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -295,17 +291,18 @@ plot(x,med1, '^-r','LineWidth',3);
 plot(x,weight1, '+-m','LineWidth',3);
 plot(x,curvefit1, '-os','LineWidth',3);
 %tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
-tit = strcat('Synchronization error using Kalman Filter for different number of nodes');
+tit = strcat('Synchronization error for different constant speed');
 %tit = strcat('Synchronization error for nodes at ',spe,' km/hr with different T_{sync}');
 %tit = strcat('Synchronization error for ',no,' nodes with different gain factors');
 xlabel('period(sec)','fontsize',22);
 ylabel('Synchronization error(clock cycles)','fontsize',22);
 %legend("KF","M","WM","NLLS");
 %legend("0.4","0.6","0.8","1");
-legend("10","20","30","40");
+legend("0","10","20","30");
 %legend("0.25","0.5","0.75","1.0");
 title(tit,'fontsize',24);
 grid on ;
+axis([0 sim_time_limit 0 15]);
 print('-F:20',filename) ;
 clf;
 
