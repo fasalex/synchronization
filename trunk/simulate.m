@@ -1,5 +1,5 @@
 %%%% The begining of the end !!!!!!!!!!
-for s=1:1
+for s=1:3
 iter = 1;
 finalvec = zeros(iter,500);
 barplotter=zeros(20,500,4); 
@@ -292,41 +292,15 @@ plot(x,kalman1, 'b','LineWidth',3);
 plot(x,med1, '^-r','LineWidth',3);
 plot(x,weight1, '+-m','LineWidth',3);
 plot(x,curvefit1, '-os','LineWidth',3);
-%tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
-tit = strcat('Synchronization error for ',no,' nodes using Median');
-%tit = strcat('Synchronization error using Kalman Filter for different number of nodes');
-%tit = strcat('Synchronization error for nodes at ',spe,' km/hr with different T_{sync}');
-%tit = strcat('Synchronization error for ',no,' nodes with different gain factors');
+tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
 xlabel('period(sec)','fontsize',22);
 ylabel('Synchronization error(clock cycles)','fontsize',22);
-%legend("KF","M","WM","NLLS");
-%legend("0.4","0.6","0.8","1");
-%legend("0","10","20","30");
-legend("6","7","8","9");
+legend("KF","M","WM","NLLS");
 title(tit,'fontsize',24);
 grid on ;
 print('-F:20',filename) ;
 clf;
 
-hold on;
-plot(kalman, 'b','LineWidth',3);
-plot(med, '^-r','LineWidth',3);
-plot(weight, '+-m','LineWidth',3);
-plot(curvefit, '-os','LineWidth',3);
-%tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
-tit = strcat('Synchronization error for nodes at ',spe,' km/hr with different T_{sync}');
-%tit = strcat('Synchronization error for ',no,' nodes with different gain factors');
-xlabel('period(sec)','fontsize',22);
-ylabel('Synchronization error(clock cycles)','fontsize',22);
-legend("KF","M","WM","NLLS");
-%legend("0","10","20","30");
-%legend("0.4","0.6","0.8","1");
-%legend("0.25","0.5","0.75","1.0");
-title(tit,'fontsize',24);
-grid on ;
-filename = strcat(prefix,ra,'s',spe,'-g',gai,'-n',no,'-alpha',alp,' try',ext);
-print('-F:20',filename) ;
-clf;
 %% Perform comparisons Numerically
 med(find(med<=1)) = 1 ;
 K = abs(med - kalman)*100./ med ;
