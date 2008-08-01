@@ -1,13 +1,16 @@
 %%%% The begining of the end !!!!!!!!!!
-for s=1:3
-iter = 1;
+for s=1:1
+iter = 100;
 finalvec = zeros(iter,500);
 barplotter=zeros(20,500,4); 
 clf;
 for master=1:iter 
 keep('master','finalvec','iter','s','barplotter');
 clf ;
-
+system("clear");
+disp("#################### Number of Iteration ####################");
+disp(master);
+disp("#################### Number of Iteration ####################");
 system("rm *.vec");
 system("rm *.sca");
 
