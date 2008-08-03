@@ -1,8 +1,8 @@
 %%%% The begining of the end !!!!!!!!!!
 for s=1:1
-iter = 100;
+iter = 10;
 finalvec = zeros(iter,500);
-barplotter=zeros(20,500,4); 
+barplotter=zeros(50,500,4); 
 clf;
 for master=1:iter 
 keep('master','finalvec','iter','s','barplotter');
@@ -14,7 +14,7 @@ disp("#################### Number of Iteration ####################");
 system("rm *.vec");
 system("rm *.sca");
 
-number_of_nodes = 20 ;
+number_of_nodes = 50 ;
 rnd = rand(1,number_of_nodes);
 hold on ;
 for fasika = 1:4
@@ -29,7 +29,7 @@ jump = 1 ;                     %% jump to reduce the calculation burden
 sim_time_limit = 500;		    %% Number of events needed for "limit" 
 updateInterval = 1;                 %% In simulation seconds 
 if(s==1) 			    %% Speed of the nodes , random in a sense that 
-speed = 0 ;
+speed = 5.4 + rand() ;   
 elseif(s==2)
 speed = 5.4 + rand() ;   
 elseif(s==3)
@@ -291,10 +291,10 @@ med1(b) = med(fasc*b);
 weight1(b) = weight(fasc*b);
 curvefit1(b) = curvefit(fasc*b);
 endfor
-plot(x,kalman1, 'b','LineWidth',3);
+plot(x,kalman1, '-','LineWidth',3);
 plot(x,med1, '^-r','LineWidth',3);
 plot(x,weight1, '+-m','LineWidth',3);
-plot(x,curvefit1, '-os','LineWidth',3);
+plot(x,curvefit1, 'b','LineWidth',3);
 tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
 xlabel('period(sec)','fontsize',22);
 ylabel('Synchronization error(clock cycles)','fontsize',22);
@@ -320,7 +320,7 @@ NLCF1(b) = NLCF(fasc*b);
 endfor
 plot(x,K1,'b','LineWidth',3);
 plot(x,W1,'+-m','LineWidth',3);
-plot(x,NLCF1,'-os','LineWidth',3) ;
+plot(x,NLCF1,'-','LineWidth',3) ;
 xlabel('period(sec)','fontsize',22) ;
 ylabel('Relative Improvement(%)','fontsize',22);
 legend("KF","WM","NLLS");
