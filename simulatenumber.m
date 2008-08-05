@@ -1,6 +1,6 @@
 %%%% The begining of the end !!!!!!!!!!
 for s=1:1
-iter = 2;
+iter = 3;
 finalvec = zeros(iter,500);
 clf;
 for master=1:iter 
@@ -15,29 +15,29 @@ rnd = rand(1,number_of_nodes);
 hold on ;
 for fasika = 1:4
 keep('fasika','number_of_nodes','rnd','master','finalvec','iter','s','barplotter');
-algorithm = 1  ;
+algorithm = 3  ;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          INPUT PARAMETERS FOR THE SIMULATION                         %%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 run = 1 ;                           %% 1 - commandline  2 - gui 
 jump = 1 ;                     %% jump to reduce the calculation burden 
-%number_of_nodes = fasika * 10 ;
+%number_of_nodes = fasika * 10  ;
 %rnd = rand(1,number_of_nodes);
 sim_time_limit = 500;		    %% Number of events needed for "limit" 
 updateInterval = 1;                 %% In simulation seconds 
 if(s==1) 			    %% Speed of the nodes , random in a sense that 
-speed = fasika * 10 - 10 ;
+speed = fasika*5 - 5 ;
 elseif(s==2)
 speed = 5.4 + rand() ;   
 elseif(s==3)
 speed = 20 + rand() ;
 endif
-gain = 0.8;                       %% Value for computing the offsets 
+gain = 0.2*fasika + 0.2;                       %% Value for computing the offsets 
 express = "yes" ;                   %% Enable or Disable express mode 
 alpha =2.5;                         %% Channel factor - attenuation if you might say ...
 playgroundSizeX = (sqrt(number_of_nodes)+1)*30; % The distance between the nodes is at max 30 meters 
-%playgroundSizeX = 200 ;
+playgroundSizeX = 200 ;
 playgroundSizeY =  playgroundSizeX ;            %% meters
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -286,72 +286,25 @@ med1(b) = med(fasc*b);
 weight1(b) = weight(fasc*b);
 curvefit1(b) = curvefit(fasc*b);
 endfor
-plot(x,kalman1, 'b','LineWidth',3);
+plot(x,kalman1, '-','LineWidth',3);
 plot(x,med1, '^-r','LineWidth',3);
 plot(x,weight1, '+-m','LineWidth',3);
-plot(x,curvefit1, '-os','LineWidth',3);
+plot(x,curvefit1, 'b','LineWidth',3);
 %tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
-tit = strcat('Synchronization error for different constant speed');
+tit = strcat('Synchronization error for 20 nodes moving at different speed');
 %tit = strcat('Synchronization error for nodes at ',spe,' km/hr with different T_{sync}');
 %tit = strcat('Synchronization error for ',no,' nodes with different gain factors');
 xlabel('period(sec)','fontsize',22);
 ylabel('Synchronization error(clock cycles)','fontsize',22);
 %legend("KF","M","WM","NLLS");
-%legend("0.4","0.6","0.8","1");
-legend("0","10","20","30");
-%legend("0.25","0.5","0.75","1.0");
+%legend("1","2","3","4");
+legend("0","5","10","15");
+%legend("0.4","0.6","0.8","1.0");
 title(tit,'fontsize',24);
 grid on ;
-axis([0 sim_time_limit 0 15]);
+axis([0 sim_time_limit 0 30]);
 print('-F:20',filename) ;
 clf;
 
-hold on;
-plot(kalman, 'b','LineWidth',3);
-plot(med, '^-r','LineWidth',3);
-plot(weight, '+-m','LineWidth',3);
-plot(curvefit, '-os','LineWidth',3);
-%tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
-tit = strcat('Synchronization error for nodes at ',spe,' km/hr with different T_{sync}');
-%tit = strcat('Synchronization error for ',no,' nodes with different gain factors');
-xlabel('period(sec)','fontsize',22);
-ylabel('Synchronization error(clock cycles)','fontsize',22);
-%legend("KF","M","WM","NLLS");
-legend("1","2","3","4");
-%legend("0.4","0.6","0.8","1");
-%legend("0.25","0.5","0.75","1.0");
-title(tit,'fontsize',24);
-grid on ;
-filename = strcat(prefix,ra,'s',spe,'-g',gai,'-n',no,'-alpha',alp,' try',ext);
-print('-F:20',filename) ;
-clf;
-%% Perform comparisons Numerically
-med(find(med<=1)) = 1 ;
-K = abs(med - kalman)*100./ med ;
-W = abs(med - weight)*100./ med ;
-NLCF = abs(med - curvefit)*100./med ;
-hold on ;
-filename = strcat(prefix,ra,'s',spe,'-g',gai,'-n',no,'-alpha',alp,' Error',ext);
-fasc = 2 ;
-x = 1:fasc:500;
-for(b=1:500/fasc)
-K1(b) = K(fasc*b);
-W1(b) = W(fasc*b);
-NLCF1(b) = NLCF(fasc*b);
 endfor
-plot(x,K1,'b','LineWidth',3);
-plot(x,W1,'+-m','LineWidth',3);
-plot(x,NLCF1,'-os','LineWidth',3) ;
-xlabel('period(sec)','fontsize',22) ;
-ylabel('Relative Improvement(%)','fontsize',22);
-legend("KF","WM","NLLS");
-title('Performance improvement compared to Median algorithm(%)','fontsize',24);
-grid on ;
-print('-F:20',filename) ;
-endfor
-
-%% For the gradient graph
-%%  y = (rho*d.*log(x-1))./(8*(1+rho)*log(8*(1+rho).*log(x-1)/rho)) 
-
-anime = [kalman,med,weight,curvefit]';
 disp("Euffffffffff");
