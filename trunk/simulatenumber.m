@@ -1,6 +1,6 @@
 %%%% The begining of the end !!!!!!!!!!
 for s=1:1
-iter = 1 ;
+iter = 10 ;
 finalvec = zeros(iter,500);
 clf;
 for master=1:iter 
@@ -10,12 +10,12 @@ clf ;
 system("rm *.vec");
 system("rm *.sca");
 
-number_of_nodes = 20 ;
+number_of_nodes = 50 ;
 rnd = rand(1,number_of_nodes);
 hold on ;
 for fasika = 1:4
 keep('fasika','number_of_nodes','rnd','master','finalvec','iter','s','barplotter');
-algorithm = 4  ;
+algorithm = fasika  ;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          INPUT PARAMETERS FOR THE SIMULATION                         %%%%%%%%%%%%%%
@@ -165,7 +165,7 @@ z(i+1) = i ;
 fprintf(fidout, "mobileNet.Node[%d].mobility.z = 0\n",z(i+1));
 fprintf(fidout, "mobileNet.Node[%d].normalNic.id = %d\n", i, i );
 fprintf(fidout, "mobileNet.Node[%d].normalNic.start_time = %f \n",i, rnd(i+1));
-fprintf(fidout, "mobileNet.Node[%d].mobility.speed= %f\n",i, speed);
+fprintf(fidout, "mobileNet.Node[%d].mobility.speed= %f\n",i, rand * 20);
 fprintf(fidout, "mobileNet.Node[%d].mobility.updateInterval= %f\n",i, updateInterval);
 fprintf(fidout, "mobileNet.Node[%d].mobility.debug = 0 \n\n",i);
 j=j+1;
@@ -291,14 +291,14 @@ plot(x,med1, '^-r','LineWidth',3);
 plot(x,weight1, '+-m','LineWidth',3);
 plot(x,curvefit1, 'b','LineWidth',3);
 %tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
-tit = strcat('Synchronization error for ',no,' nodes moving at different constant speed');
+tit = strcat('Synchronization error for ',no,' nodes moving at different speed');
 %tit = strcat('Synchronization error for nodes at ',spe,' km/hr with different T_{sync}');
 %tit = strcat('Synchronization error for ',no,' nodes with different gain factors');
 xlabel('period(sec)','fontsize',22);
 ylabel('Synchronization error(clock cycles)','fontsize',22);
-%legend("KF","M","WM","NLLS");
+legend("KF","M","WM","NLLS");
 %legend("1","2","3","4");
-legend("0","10","20","30");
+%legend("0","10","20","30");
 %legend("0.4","0.6","0.8","1.0");
 title(tit,'fontsize',24);
 grid on ;
