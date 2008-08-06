@@ -1,6 +1,6 @@
 %%%% The begining of the end !!!!!!!!!!
 for s=1:1
-iter = 3;
+iter = 10 ;
 finalvec = zeros(iter,500);
 clf;
 for master=1:iter 
@@ -15,7 +15,7 @@ rnd = rand(1,number_of_nodes);
 hold on ;
 for fasika = 1:4
 keep('fasika','number_of_nodes','rnd','master','finalvec','iter','s','barplotter');
-algorithm = 3  ;
+algorithm = fasika  ;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          INPUT PARAMETERS FOR THE SIMULATION                         %%%%%%%%%%%%%%
@@ -165,7 +165,7 @@ z(i+1) = i ;
 fprintf(fidout, "mobileNet.Node[%d].mobility.z = 0\n",z(i+1));
 fprintf(fidout, "mobileNet.Node[%d].normalNic.id = %d\n", i, i );
 fprintf(fidout, "mobileNet.Node[%d].normalNic.start_time = %f \n",i, rnd(i+1));
-fprintf(fidout, "mobileNet.Node[%d].mobility.speed= %f\n",i, speed);
+fprintf(fidout, "mobileNet.Node[%d].mobility.speed= %f\n",i, rand * 20);
 fprintf(fidout, "mobileNet.Node[%d].mobility.updateInterval= %f\n",i, updateInterval);
 fprintf(fidout, "mobileNet.Node[%d].mobility.debug = 0 \n\n",i);
 j=j+1;
@@ -296,9 +296,9 @@ tit = strcat('Synchronization error for 20 nodes moving at different speed');
 %tit = strcat('Synchronization error for ',no,' nodes with different gain factors');
 xlabel('period(sec)','fontsize',22);
 ylabel('Synchronization error(clock cycles)','fontsize',22);
-%legend("KF","M","WM","NLLS");
+legend("KF","M","WM","NLLS");
 %legend("1","2","3","4");
-legend("0","5","10","15");
+%legend("0","5","10","15");
 %legend("0.4","0.6","0.8","1.0");
 title(tit,'fontsize',24);
 grid on ;

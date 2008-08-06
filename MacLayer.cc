@@ -106,9 +106,9 @@ void MacLayer::analyze_msg()
        if(neigh == 0)
                median = 0 ;
        else if ( neigh == 1)
-               median = 0.5 * temp_varr[0] ;
+               median = temp_varr[0] ;
        else if( neigh%2 == 0)
-               median = 0.5 *(temp_varr[neigh/2 -1] + temp_varr[neigh/2]) ; 
+               median = temp_varr[neigh/2] ; 
        else if (neigh%2 == 1)
 	       median = temp_varr[(neigh+1)/2 -1 ] ;
 
