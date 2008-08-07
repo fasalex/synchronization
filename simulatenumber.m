@@ -1,6 +1,6 @@
 %%%% The begining of the end !!!!!!!!!!
 for s=1:1
-iter = 1 ;
+iter = 10 ;
 finalvec = zeros(iter,500);
 clf;
 for master=1:iter 
@@ -10,12 +10,12 @@ clf ;
 system("rm *.vec");
 system("rm *.sca");
 
-number_of_nodes = 50 ;
+number_of_nodes = 20 ;
 rnd = rand(1,number_of_nodes);
 hold on ;
 for fasika = 1:4
 keep('fasika','number_of_nodes','rnd','master','finalvec','iter','s','barplotter');
-algorithm = 2  ;
+algorithm = 1  ;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%          INPUT PARAMETERS FOR THE SIMULATION                         %%%%%%%%%%%%%%
@@ -291,18 +291,18 @@ plot(x,med1, '^-r','LineWidth',3);
 plot(x,weight1, '+-m','LineWidth',3);
 plot(x,curvefit1, 'b','LineWidth',3);
 %tit = strcat('Synchronization error for ',no,' nodes moving at ',spe,' km/hr');
-%tit = strcat('Synchronization error for ',no,' nodes moving at different speed');
+tit = strcat('Synchronization error for ',no,' nodes moving at different speed');
 %tit = strcat('Synchronization error for nodes at ',spe,' km/hr with different T_{sync}');
-tit = strcat('Synchronization error for ',no,' nodes with different gain factors');
+%tit = strcat('Synchronization error for ',no,' nodes with different gain factors');
 xlabel('period(sec)','fontsize',22);
 ylabel('Synchronization error(clock cycles)','fontsize',22);
 %legend("KF","M","WM","NLLS");
 %legend("1","2","3","4");
-%legend("0","10","20","30");
-legend("0.4","0.6","0.8","1.0");
+legend("0","5","10","15");
+%legend("0.4","0.6","0.8","1.0");
 title(tit,'fontsize',24);
 grid on ;
-%axis([0 sim_time_limit 0 30]);
+axis([0 sim_time_limit 0 30]);
 print('-F:20',filename) ;
 clf;
 
