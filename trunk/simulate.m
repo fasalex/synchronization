@@ -1,15 +1,19 @@
 %%%% The begining of the end !!!!!!!!!!
+fas = 1;
+for fas = 1:5 
 for s = 1:1
 iter = 10 ;
 finalvec = zeros(iter,500);
 barplotter=zeros(50,500,4); 
 clf;
 for master=1:iter 
-keep('master','finalvec','iter','s','barplotter');
+keep('master','finalvec','iter','s','barplotter','fas');
 clf ;
 system("clear");
 disp("#################### Number of Iteration ####################");
 disp(master);
+disp("#################### Number of Iteration ####################");
+disp(fas);
 disp("#################### Number of Iteration ####################");
 system("rm *.vec");
 system("rm *.sca");
@@ -18,7 +22,7 @@ number_of_nodes = 50 ;
 rnd = rand(1,number_of_nodes);
 hold on ;
 for fasika = 1:4
-keep('fasika','number_of_nodes','rnd','master','finalvec','iter','s','barplotter');
+keep('fasika','number_of_nodes','rnd','master','finalvec','iter','s','barplotter','fas');
 algorithm =  fasika ;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -334,3 +338,4 @@ endfor
 
 anime = [kalman,med,weight,curvefit]';
 disp("Euffffffffff");
+endfor
