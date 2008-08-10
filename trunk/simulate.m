@@ -1,6 +1,5 @@
 %%%% The begining of the end !!!!!!!!!!
-fas = 1;
-for fas = 1:5 
+for fas = 1:1 
 for s = 1:1
 iter = 10 ;
 finalvec = zeros(iter,500);
