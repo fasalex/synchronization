@@ -138,7 +138,7 @@ void MacLayer::analyze_msg()
 			// Time update "PREDICT"
 
 			x =  phi*x ;
-			P =  H*P*H + Q ;
+			P =  phi*P*phi + Q ;
 
 			// Measurment Update "CORRECT"
 
