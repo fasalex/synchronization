@@ -1,9 +1,9 @@
 %%%% The begining of the end !!!!!!!!!!
 for fas = 1:1 
-for s = 1:1
-iter = 10 ;
+for s = 1:3
+iter = 5 ;
 finalvec = zeros(iter,500);
-barplotter=zeros(50,500,4); 
+barplotter=zeros(20,500,4); 
 clf;
 for master=1:iter 
 keep('master','finalvec','iter','s','barplotter','fas');
@@ -17,7 +17,7 @@ disp("#################### Number of Iteration ####################");
 system("rm *.vec");
 system("rm *.sca");
 
-number_of_nodes = 50 ;
+number_of_nodes = 20 ;
 rnd = rand(1,number_of_nodes);
 hold on ;
 for fasika = 1:4
@@ -28,11 +28,11 @@ algorithm =  fasika ;
 %%%%%%%          INPUT PARAMETERS FOR THE SIMULATION                         %%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 run = 1 ;                           %% 1 - commandline  2 - gui 
-jump = 1 ;                     %% jump to reduce the calculation burden 
+jump = 0 ;                     %% jump to reduce the calculation burden 
 sim_time_limit = 500;		    %% Number of events needed for "limit" 
 updateInterval = 1;                 %% In simulation seconds 
 if(s==1) 			    %% Speed of the nodes , random in a sense that 
-speed = 5.4 + rand() ;   
+speed = 0 ;   
 elseif(s==2)
 speed = 5.4 + rand() ;   
 elseif(s==3)

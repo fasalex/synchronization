@@ -83,7 +83,8 @@ void MacLayer::analyze_msg()
        int neigh = count;
        double median = 0;
        double add_on ;
-
+//       if((jump==0) && ( algorithm !=1)){
+       if((jump==1) || ((jump==0) && (algorithm!=1))){
        for(int x = 0; x < neigh; x ++) {
                for(int y = x+1; y < neigh; y ++) {
                                if(temp_varr[y] < temp_varr[x]) {
@@ -93,6 +94,7 @@ void MacLayer::analyze_msg()
                                }
                }
        }
+      }
 
        if(neigh!=0)
        add_on = temp_varr[0] ;
@@ -229,8 +231,8 @@ void MacLayer::analyze_msg()
                break;
        }
 
-       if(period%jump != 0)
-	offset = 0 ;
+//       if(period%jump != 0)
+//	offset = 0 ;
 
        broadcast_time = broadcast_time - offset + frequency ;
        Ref = broadcast_time + 0.01  ;
